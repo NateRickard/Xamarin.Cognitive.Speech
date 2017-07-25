@@ -18,6 +18,11 @@ namespace Xamarin.Cognitive.BingSpeech
 		readonly AuthenticationClient authClient;
 
 
+		/// <summary>
+		/// Gets or sets the locale.
+		/// </summary>
+		/// <remarks>Supported locales can be found here: 
+		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#recognition-language</remarks>
 		public string Locale { get; set; } = "en-US";
 
 
@@ -29,7 +34,7 @@ namespace Xamarin.Cognitive.BingSpeech
 
 		async Task<HttpRequestMessage> CreateRequest (string audioFilePath)
 		{
-			StringBuilder requestUriBuilder = new StringBuilder (Constants.Endpoints.BingSpeechApi);
+			var requestUriBuilder = new StringBuilder (Constants.Endpoints.BingSpeechApi);
 
 			requestUriBuilder.Append (@"?scenarios=smd");                               // websearch is the other main option.
 			requestUriBuilder.Append (@"&appid=D4D52672-91D7-4C74-8AD8-42B1D98141A5");  // You must use this ID.
