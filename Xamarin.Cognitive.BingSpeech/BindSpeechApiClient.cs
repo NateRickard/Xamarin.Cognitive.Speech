@@ -15,7 +15,7 @@ namespace Xamarin.Cognitive.BingSpeech
 	{
 		int retryCount;
 
-		readonly AuthenticationClient authClient;
+		public AuthenticationClient AuthClient { get; private set; }
 
 
 		/// <summary>
@@ -28,7 +28,7 @@ namespace Xamarin.Cognitive.BingSpeech
 
 		public BingSpeechApiClient (string subscriptionKey)
 		{
-			authClient = new AuthenticationClient (subscriptionKey);
+			AuthClient = new AuthenticationClient (subscriptionKey);
 		}
 
 
@@ -54,7 +54,7 @@ namespace Xamarin.Cognitive.BingSpeech
 				var request = new HttpRequestMessage (HttpMethod.Post, requestUri);
 
 				request.Headers.TransferEncodingChunked = true;
-				request.Headers.Authorization = new AuthenticationHeaderValue ("Bearer", authClient.Token);
+				request.Headers.Authorization = new AuthenticationHeaderValue ("Bearer", AuthClient.Token);
 				request.Headers.Accept.ParseAdd ("application/json");
 				request.Headers.Accept.ParseAdd ("text/xml");
 
@@ -101,7 +101,7 @@ namespace Xamarin.Cognitive.BingSpeech
 				//handle expired auth token
 				if (ex.HasWebResponseStatus (HttpStatusCode.Forbidden) && retryCount < 1)
 				{
-					await authClient.Authenticate (true);
+					await AuthClient.Authenticate (true);
 					retryCount++;
 
 					return await SendRequest (request);
@@ -119,7 +119,7 @@ namespace Xamarin.Cognitive.BingSpeech
 
 		public async Task<SpeechResult> SpeechToText (string audioFilePath)
 		{
-			await authClient.Authenticate ();
+			await AuthClient.Authenticate ();
 
 			try
 			{

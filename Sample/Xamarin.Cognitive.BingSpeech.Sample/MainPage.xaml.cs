@@ -30,7 +30,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		}
 
 
-		async void Record_Clicked (object sender, System.EventArgs e)
+		async void Record_Clicked (object sender, EventArgs e)
 		{
 			await RecordAudio ();
 		}
@@ -67,13 +67,26 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		}
 
 
-		void Recorder_AudioInputReceived (object sender, string audioFile)
+		async void Recorder_AudioInputReceived (object sender, string audioFile)
 		{
-			RecordButton.Text = "Record";
+			Device.BeginInvokeOnMainThread (() => RecordButton.Text = "Record");
 
 			//do STT
 
+			if (audioFile != null)
+			{
+				var speechResult = await bingSpeechClient.SpeechToText (audioFile);
 
+				if (speechResult != null)
+				{
+					var text = $"Confidence: {speechResult.Confidence}\r\n" +
+						$"Lexical: {speechResult.Lexical}\r\n" +
+						$"Name: {speechResult.Name}" +
+						$"Scenario: {speechResult.Scenario}";
+
+					System.Diagnostics.Debug.WriteLine (text);
+				}
+			}
 		}
 	}
 }

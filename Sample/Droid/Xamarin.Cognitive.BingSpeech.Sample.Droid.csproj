@@ -82,13 +82,19 @@
     <Reference Include="Xamarin.Forms.Xaml">
       <HintPath>..\..\packages\Xamarin.Forms.2.3.4.247\lib\MonoAndroid10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
-    <Reference Include="Plugin.AudioRecorder.Droid">
-      <HintPath>..\..\packages\Plugin.AudioRecorder.0.4.0-prerelease\lib\monoandroid71\Plugin.AudioRecorder.Droid.dll</HintPath>
-    </Reference>
     <Reference Include="Java.Interop" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="mscorlib" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Plugin.AudioRecorder">
+      <HintPath>..\..\packages\Plugin.AudioRecorder.0.4.2-prerelease\lib\monoandroid71\Plugin.AudioRecorder.dll</HintPath>
+    </Reference>
+    <Reference Include="PCLStorage.Abstractions">
+      <HintPath>..\..\packages\PCLStorage.1.0.2\lib\monoandroid\PCLStorage.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="PCLStorage">
+      <HintPath>..\..\packages\PCLStorage.1.0.2\lib\monoandroid\PCLStorage.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />

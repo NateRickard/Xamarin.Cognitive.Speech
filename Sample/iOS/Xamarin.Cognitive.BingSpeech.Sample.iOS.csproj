@@ -94,8 +94,14 @@
     <Reference Include="Xamarin.Forms.Xaml">
       <HintPath>..\..\packages\Xamarin.Forms.2.3.4.247\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
-    <Reference Include="Plugin.AudioRecorder.iOS">
-      <HintPath>..\..\packages\Plugin.AudioRecorder.0.4.0-prerelease\lib\xamarinios10\Plugin.AudioRecorder.iOS.dll</HintPath>
+    <Reference Include="Plugin.AudioRecorder">
+      <HintPath>..\..\packages\Plugin.AudioRecorder.0.4.2-prerelease\lib\xamarinios10\Plugin.AudioRecorder.dll</HintPath>
+    </Reference>
+    <Reference Include="PCLStorage.Abstractions">
+      <HintPath>..\..\packages\PCLStorage.1.0.2\lib\portable-Xamarin.iOS+Xamarin.Mac\PCLStorage.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="PCLStorage">
+      <HintPath>..\..\packages\PCLStorage.1.0.2\lib\portable-Xamarin.iOS+Xamarin.Mac\PCLStorage.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

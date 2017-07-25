@@ -50,8 +50,8 @@
     <Reference Include="Xamarin.Forms.Xaml">
       <HintPath>..\..\packages\Xamarin.Forms.2.3.4.247\lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
-    <Reference Include="Plugin.AudioRecorder.Droid">
-      <HintPath>..\..\packages\Plugin.AudioRecorder.0.4.0-prerelease\lib\portable45-net45+win8+wpa81\Plugin.AudioRecorder.Droid.dll</HintPath>
+    <Reference Include="Plugin.AudioRecorder">
+      <HintPath>..\..\packages\Plugin.AudioRecorder.0.4.2-prerelease\lib\portable45-net45+win8+wpa81\Plugin.AudioRecorder.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
