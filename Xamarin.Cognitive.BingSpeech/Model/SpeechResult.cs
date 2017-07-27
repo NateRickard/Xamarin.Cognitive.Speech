@@ -2,15 +2,28 @@
 
 namespace Xamarin.Cognitive.BingSpeech.Model
 {
-	[JsonObject ("result")]
+	//[JsonObject ("result")]
 	public class SpeechResult
 	{
-		public string Scenario { get; set; }
-
-		public string Name { get; set; }
+		public float Confidence { get; set; }
 
 		public string Lexical { get; set; }
 
-		public float Confidence { get; set; }
+		public string ITN { get; set; }
+
+		public string MaskedITN { get; set; }
+
+		public string Display { get; set; }
 	}
 }
+
+//"RecognitionStatus": "Success",
+//"Offset": 22500000,
+//"Duration": 21000000,
+//"NBest": [{
+//    "Confidence": 0.941552162,
+//    "Lexical": "find a funny movie to watch",
+//    "ITN": "find a funny movie to watch",
+//    "MaskedITN": "find a funny movie to watch",
+//    "Display": "Find a funny movie to watch."
+//}]
