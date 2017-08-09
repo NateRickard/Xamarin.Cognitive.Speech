@@ -38,10 +38,13 @@
     <Compile Include="Model\RecognitionMode.cs" />
     <Compile Include="Model\OutputMode.cs" />
     <Compile Include="Constants\MimeTypes.cs" />
+    <Compile Include="Api\PushStreamContent.cs" />
+    <Compile Include="Model\RecognitionSpeechResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />
     <Folder Include="Constants\" />
+    <Folder Include="Api\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

@@ -27,3 +27,5 @@ namespace Xamarin.Cognitive.BingSpeech.Model
 //    "MaskedITN": "find a funny movie to watch",
 //    "Display": "Find a funny movie to watch."
 //}]
+
+//{"RecognitionStatus":"Success","DisplayText":"This is a test of the push functionality.","Offset":8500000,"Duration":27800000}

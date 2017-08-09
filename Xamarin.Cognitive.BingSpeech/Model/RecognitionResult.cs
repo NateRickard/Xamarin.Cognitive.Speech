@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Xamarin.Cognitive.BingSpeech.Model
 {
@@ -10,6 +11,7 @@ namespace Xamarin.Cognitive.BingSpeech.Model
 
 		public string Duration { get; set; }
 
+		[JsonProperty ("NBest")]
 		public List<SpeechResult> Results { get; set; }
 	}
 }
