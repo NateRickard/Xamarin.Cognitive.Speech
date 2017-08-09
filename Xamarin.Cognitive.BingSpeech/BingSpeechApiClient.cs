@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Net;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Text;
 using PCLStorage;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -42,14 +41,6 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
-		/// Gets or sets the output mode.
-		/// </summary>
-		/// <value>The output mode.</value>
-		/// <remarks>https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
-		public OutputMode OutputMode { get; set; }
-
-
-		/// <summary>
 		/// Gets or sets the API version.
 		/// </summary>
 		/// <value>The API version. Defaults to "v1"</value>
@@ -62,28 +53,14 @@ namespace Xamarin.Cognitive.BingSpeech
 		}
 
 
-		async Task<HttpRequestMessage> CreateRequest (string audioFilePath)
+		HttpRequestMessage CreateRequest (string audioFilePath, OutputMode outputMode)
 		{
-			//var requestUriBuilder = new StringBuilder (Constants.Endpoints.BingSpeechApi);
-
 			var uriBuilder = new UriBuilder ("https",
 											 Constants.Endpoints.BingSpeechApi.Host,
 											 Constants.Endpoints.BingSpeechApi.Port,
 											 Constants.Endpoints.BingSpeechApi.Path);
 			uriBuilder.Path += $"/{RecognitionMode.ToString ().ToLower ()}/cognitiveservices/{ApiVersion}";
-			uriBuilder.Query = $"language={RecognitionLanguage}&format={OutputMode.ToString ().ToLower ()}";
-
-
-			//requestUriBuilder.Append (@"?scenarios=smd");                               // websearch is the other main option.
-			//requestUriBuilder.Append (@"&appid=D4D52672-91D7-4C74-8AD8-42B1D98141A5");  // You must use this ID.
-			//requestUriBuilder.Append ($@"&locale={Locale}");                            // We support several other languages.  Refer to README file.
-			//requestUriBuilder.Append (@"&device.os=wp7");
-			//requestUriBuilder.Append (@"&version=3.0");
-			//requestUriBuilder.Append (@"&format=json");
-			//requestUriBuilder.Append (@"&instanceid=565D69FF-E928-4B7E-87DA-9A750B96D9E3");
-			//requestUriBuilder.AppendFormat (@"&requestid={0}", Guid.NewGuid ());
-
-			//var requestUri = requestUriBuilder.ToString ();
+			uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}";
 
 			Debug.WriteLine ($"Request Uri: {uriBuilder.Uri}");
 
@@ -92,18 +69,41 @@ namespace Xamarin.Cognitive.BingSpeech
 				var request = new HttpRequestMessage (HttpMethod.Post, uriBuilder.Uri);
 
 				request.Headers.TransferEncodingChunked = true;
+				request.Headers.ExpectContinue = true;
 				request.Headers.Authorization = new AuthenticationHeaderValue (Constants.Keys.Bearer, AuthClient.Token);
 				request.Headers.Accept.ParseAdd (Constants.MimeTypes.Json);
 				request.Headers.Accept.ParseAdd (Constants.MimeTypes.Xml);
 				request.Headers.Host = Constants.Endpoints.BingSpeechApi.Host;
 
-				var root = FileSystem.Current.LocalStorage;
-				var file = await root.GetFileAsync (audioFilePath);
-				var stream = await file.OpenAsync (FileAccess.Read);
-				// we'll dispose the StreamContent later after it's sent
+				request.Content = new PushStreamContent (async (outputStream, httpContext, transportContext) =>
+				{
+					try
+					{
+						byte [] buffer = null;
+						int bytesRead = 0;
 
-				request.Content = new StreamContent (stream);
-				request.Content.Headers.ContentType = new MediaTypeHeaderValue (Constants.MimeTypes.WavAudio);
+						var root = FileSystem.Current.LocalStorage;
+						var file = await root.GetFileAsync (audioFilePath);
+
+						using (outputStream)
+						using (var audioStream = await file.OpenAsync (FileAccess.Read))
+						{
+							//read 1024 raw bytes from the input audio file.
+							buffer = new Byte [checked((uint) Math.Min (1024, (int) audioStream.Length))];
+
+							while ((bytesRead = audioStream.Read (buffer, 0, buffer.Length)) != 0)
+							{
+								await outputStream.WriteAsync (buffer, 0, bytesRead);
+							}
+
+							await outputStream.FlushAsync ();
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine (ex);
+					}
+				}, new MediaTypeHeaderValue (Constants.MimeTypes.WavAudio));
 
 				return request;
 			}
@@ -127,7 +127,7 @@ namespace Xamarin.Cognitive.BingSpeech
 					if (response != null)
 					{
 						retryCount = 0;
-						Debug.WriteLine ($"sendRequest returned ${response.StatusCode}");
+						Debug.WriteLine ($"sendRequest returned {response.StatusCode}");
 
 						return await response.Content.ReadAsStringAsync ();
 					}
@@ -156,29 +156,51 @@ namespace Xamarin.Cognitive.BingSpeech
 		}
 
 
-		public async Task<SpeechResult> SpeechToText (string audioFilePath)
+		/// <summary>
+		/// Returns Speech to Text results for the given audio input.
+		/// </summary>
+		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
+		/// <param name="audioFilePath">Audio file path.</param>
+		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		public async Task<RecognitionSpeechResult> SpeechToTextSimple (string audioFilePath)
 		{
 			await AuthClient.Authenticate ();
 
 			try
 			{
-				var request = await CreateRequest (audioFilePath);
+				var request = CreateRequest (audioFilePath, OutputMode.Simple);
 				var response = await SendRequest (request);
 
-				try
-				{
-					var root = JsonConvert.DeserializeObject<RecognitionResult> (response);
-					var result = root.Results? [0];
+				var result = JsonConvert.DeserializeObject<RecognitionSpeechResult> (response);
 
-					return result;
-				}
-				catch (Exception e)
-				{
-					//looking for a specific e here... ??
-					Debug.WriteLine (e.Message);
-				}
+				return result;
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine (ex.Message);
+				throw;
+			}
+		}
 
-				return null;
+
+		/// <summary>
+		/// Returns Speech to Text results for the given audio input.
+		/// </summary>
+		/// <returns>Detailed Speech to Text results, including the N best results for the given speech input.</returns>
+		/// <param name="audioFilePath">Audio file path.</param>
+		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		public async Task<RecognitionResult> SpeechToTextDetailed (string audioFilePath)
+		{
+			await AuthClient.Authenticate ();
+
+			try
+			{
+				var request = CreateRequest (audioFilePath, OutputMode.Detailed);
+				var response = await SendRequest (request);
+
+				var result = JsonConvert.DeserializeObject<RecognitionResult> (response);
+
+				return result;
 			}
 			catch (Exception ex)
 			{
