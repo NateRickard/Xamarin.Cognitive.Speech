@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:Xamarin.Cognitive.BingSpeech.Sample" x:Class="Xamarin.Cognitive.BingSpeech.Sample.MainPage">
-    <StackLayout Orientation="Vertical" VerticalOptions="CenterAndExpand">
-        <Button x:Name="RecordButton" Text="Record" VerticalOptions="Center" HorizontalOptions="Center" Clicked="Record_Clicked" />
-        <Label x:Name="TextLabel" VerticalOptions="Center" HorizontalOptions="CenterAndExpand" HeightRequest="200" MinimumWidthRequest="400" BackgroundColor="Gray" />
-    </StackLayout>
+    <Grid>
+        <StackLayout Padding="20,80,20,0" Orientation="Vertical" Spacing="15">
+            <Label Text="Recognition Mode:" />
+            <Picker x:Name="RecognitionModePicker" Title="Choose Recognition Mode" SelectedIndex="0" SelectedItem="Interactive">
+                <Picker.Items>
+                    <x:String>Interactive</x:String>
+                    <x:String>Conversation</x:String>
+                    <x:String>Dictation</x:String>
+                </Picker.Items>
+            </Picker>
+            <Label Text="Output Mode:" />
+            <Picker x:Name="OutputModePicker" Title="Choose Output Mode" SelectedIndex="0" SelectedItem="Simple">
+                <Picker.Items>
+                    <x:String>Simple</x:String>
+                    <x:String>Detailed</x:String>
+                </Picker.Items>
+            </Picker>
+            <Button x:Name="RecordButton" Text="Record Me" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked" />
+            <Label Text="Output:" />
+            <Label x:Name="ResultsLabel" HorizontalOptions="CenterAndExpand" LineBreakMode="WordWrap" MinimumHeightRequest="200" MinimumWidthRequest="400" BackgroundColor="Gray" />
+        </StackLayout>
+        <ContentView IsVisible="false" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+            <ActivityIndicator x:Name="spinner" WidthRequest="100" HeightRequest="100" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" IsVisible="false"></ActivityIndicator>
+        </ContentView>
+    </Grid>
 </ContentPage>

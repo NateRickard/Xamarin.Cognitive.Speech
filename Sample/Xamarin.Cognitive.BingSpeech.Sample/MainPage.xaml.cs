@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Plugin.AudioRecorder;
+using Xamarin.Cognitive.BingSpeech.Model;
 using Xamarin.Forms;
 
 namespace Xamarin.Cognitive.BingSpeech.Sample
@@ -14,6 +16,10 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		public MainPage ()
 		{
 			InitializeComponent ();
+
+			//setting these in XAML doesn't seem to be working
+			RecognitionModePicker.SelectedIndex = 0;
+			OutputModePicker.SelectedIndex = 0;
 
 			recorder = new AudioRecorderService
 			{
@@ -72,40 +78,69 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 
 		void Recorder_AudioInputReceived (object sender, string audioFile)
 		{
-			try
+			string resultText = string.Empty;
+
+			Device.BeginInvokeOnMainThread (async () =>
 			{
-				Device.BeginInvokeOnMainThread (async () =>
+				try
 				{
 					RecordButton.Text = "Record";
+					spinner.IsVisible = true;
+					spinner.IsRunning = true;
 
-					//do STT
+					var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
+					var outputMode = (OutputMode) Enum.Parse (typeof (OutputMode), OutputModePicker.SelectedItem.ToString ());
 
 					if (audioFile != null)
 					{
-						var speechResult = await bingSpeechClient.SpeechToTextSimple (audioFile);
+						//set the selected recognition mode
+						bingSpeechClient.RecognitionMode = recognitionMode;
 
-						if (speechResult != null)
+						switch (outputMode)
 						{
-							//var text = $"Confidence: {speechResult.Confidence}\r\n" +
-							//$"Lexical: {speechResult.Lexical}\r\n" +
-							//$"Display: {speechResult.Display}" +
-							//$"ITN: {speechResult.ITN}" +
-							//$"Masked ITN: {speechResult.MaskedITN}";
+							case OutputMode.Simple:
+								var simpleResult = await bingSpeechClient.SpeechToTextSimple (audioFile);
 
-							var text = $"DisplayText: {speechResult.DisplayText}\r\n" +
-								$"Recognition Status: {speechResult.RecognitionStatus}\r\n" +
-								$"Offset: {speechResult.Offset}\r\n" +
-								$"Duration: {speechResult.Duration}";
+								if (simpleResult != null)
+								{
+									resultText = $"Recognition Status: {simpleResult.RecognitionStatus}\r\n" +
+										$"DisplayText: {simpleResult.DisplayText}\r\n" +
+										$"Offset: {simpleResult.Offset}\r\n" +
+										$"Duration: {simpleResult.Duration}";
+								}
+								break;
+							case OutputMode.Detailed:
+								var detailedResult = await bingSpeechClient.SpeechToTextDetailed (audioFile);
 
-							System.Diagnostics.Debug.WriteLine (text);
+								if (detailedResult != null && detailedResult.Results.Any ())
+								{
+									resultText = $"Recognition Status: {detailedResult.RecognitionStatus}\r\n" +
+										$"Offset: {detailedResult.Offset}\r\n" +
+										$"Duration: {detailedResult.Duration}\r\n";
+
+									var result = detailedResult.Results.First ();
+
+									resultText += $"--::First Result::--\r\n" +
+										$"Confidence: {result.Confidence}\r\n" +
+										$"Lexical: {result.Lexical}\r\n" +
+										$"Display: {result.Display}\r\n" +
+										$"ITN: {result.ITN}\r\n" +
+										$"Masked ITN: {result.MaskedITN}";
+								}
+								break;
 						}
+
+						System.Diagnostics.Debug.WriteLine (resultText);
+						ResultsLabel.Text = resultText;
+						spinner.IsVisible = false;
+						spinner.IsRunning = false;
 					}
-				});
-			}
-			catch (Exception ex)
-			{
-				System.Diagnostics.Debug.WriteLine (ex);
-			}
+				}
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine (ex);
+				}
+			});
 		}
 	}
 }
