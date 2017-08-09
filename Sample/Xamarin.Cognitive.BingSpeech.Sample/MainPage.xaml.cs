@@ -7,8 +7,6 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 {
 	public partial class MainPage : ContentPage
 	{
-		const string BingSpeechSubscriptionKey = "GET ONE";
-
 		AudioRecorderService recorder;
 		BingSpeechApiClient bingSpeechClient;
 
@@ -26,7 +24,12 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 
 			recorder.AudioInputReceived += Recorder_AudioInputReceived;
 
-			bingSpeechClient = new BingSpeechApiClient (BingSpeechSubscriptionKey);
+			if (Keys.BingSpeech.SubscriptionKey == Keys.BingSpeech.BadSubscriptionKey)
+			{
+				throw new Exception ("Get a Bind Speech API key here: https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-api/");
+			}
+
+			bingSpeechClient = new BingSpeechApiClient (Keys.BingSpeech.SubscriptionKey);
 		}
 
 
@@ -67,25 +70,41 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		}
 
 
-		async void Recorder_AudioInputReceived (object sender, string audioFile)
+		void Recorder_AudioInputReceived (object sender, string audioFile)
 		{
-			Device.BeginInvokeOnMainThread (() => RecordButton.Text = "Record");
-
-			//do STT
-
-			if (audioFile != null)
+			try
 			{
-				var speechResult = await bingSpeechClient.SpeechToText (audioFile);
-
-				if (speechResult != null)
+				Device.BeginInvokeOnMainThread (async () =>
 				{
-					var text = $"Confidence: {speechResult.Confidence}\r\n" +
-						$"Lexical: {speechResult.Lexical}\r\n" +
-						$"Name: {speechResult.Name}" +
-						$"Scenario: {speechResult.Scenario}";
+					RecordButton.Text = "Record";
 
-					System.Diagnostics.Debug.WriteLine (text);
-				}
+					//do STT
+
+					if (audioFile != null)
+					{
+						var speechResult = await bingSpeechClient.SpeechToTextSimple (audioFile);
+
+						if (speechResult != null)
+						{
+							//var text = $"Confidence: {speechResult.Confidence}\r\n" +
+							//$"Lexical: {speechResult.Lexical}\r\n" +
+							//$"Display: {speechResult.Display}" +
+							//$"ITN: {speechResult.ITN}" +
+							//$"Masked ITN: {speechResult.MaskedITN}";
+
+							var text = $"DisplayText: {speechResult.DisplayText}\r\n" +
+								$"Recognition Status: {speechResult.RecognitionStatus}\r\n" +
+								$"Offset: {speechResult.Offset}\r\n" +
+								$"Duration: {speechResult.Duration}";
+
+							System.Diagnostics.Debug.WriteLine (text);
+						}
+					}
+				});
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine (ex);
 			}
 		}
 	}
