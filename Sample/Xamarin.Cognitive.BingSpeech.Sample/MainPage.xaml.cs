@@ -78,7 +78,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 
 		void Recorder_AudioInputReceived (object sender, string audioFile)
 		{
-			string resultText = string.Empty;
+			string resultText = null;
 
 			Device.BeginInvokeOnMainThread (async () =>
 			{
@@ -131,7 +131,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 						}
 
 						System.Diagnostics.Debug.WriteLine (resultText);
-						ResultsLabel.Text = resultText;
+						ResultsLabel.Text = resultText ?? "No Results!";
 						spinner.IsVisible = false;
 						spinner.IsRunning = false;
 					}
