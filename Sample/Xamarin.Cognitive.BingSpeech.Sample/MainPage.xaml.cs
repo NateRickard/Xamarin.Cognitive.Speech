@@ -20,6 +20,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			//setting these in XAML doesn't seem to be working
 			RecognitionModePicker.SelectedIndex = 0;
 			OutputModePicker.SelectedIndex = 0;
+			ProfanityModePicker.SelectedIndex = 0;
 
 			recorder = new AudioRecorderService
 			{
@@ -90,11 +91,13 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 
 					var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
 					var outputMode = (OutputMode) Enum.Parse (typeof (OutputMode), OutputModePicker.SelectedItem.ToString ());
+					var profanityMode = (ProfanityMode) Enum.Parse (typeof (ProfanityMode), ProfanityModePicker.SelectedItem.ToString ());
 
 					if (audioFile != null)
 					{
 						//set the selected recognition mode
 						bingSpeechClient.RecognitionMode = recognitionMode;
+						bingSpeechClient.ProfanityMode = profanityMode;
 
 						switch (outputMode)
 						{

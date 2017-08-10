@@ -17,6 +17,14 @@
                     <x:String>Detailed</x:String>
                 </Picker.Items>
             </Picker>
+            <Label Text="Profanity Mode:" />
+            <Picker x:Name="ProfanityModePicker" Title="Choose Profanity Mode" SelectedIndex="0" SelectedItem="Masked">
+                <Picker.Items>
+                    <x:String>Masked</x:String>
+                    <x:String>Removed</x:String>
+                    <x:String>Raw</x:String>
+                </Picker.Items>
+            </Picker>
             <Button x:Name="RecordButton" Text="Record Me" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked" />
             <Label Text="(15 sec max)" FontSize="14" HorizontalOptions="Center" />
             <Label Text="Output:" />
