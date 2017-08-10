@@ -41,6 +41,15 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
+		/// Gets or sets the profanity mode.
+		/// </summary>
+		/// <value>The profanity mode.</value>
+		/// <remarks>You can control how the service handles profanity by setting the profanity mode.  
+		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#profanity-handling-in-speech-recognition</remarks>
+		public ProfanityMode ProfanityMode { get; set; }
+
+
+		/// <summary>
 		/// Gets or sets the API version.
 		/// </summary>
 		/// <value>The API version. Defaults to "v1"</value>
@@ -60,7 +69,7 @@ namespace Xamarin.Cognitive.BingSpeech
 											 Constants.Endpoints.BingSpeechApi.Port,
 											 Constants.Endpoints.BingSpeechApi.Path);
 			uriBuilder.Path += $"/{RecognitionMode.ToString ().ToLower ()}/cognitiveservices/{ApiVersion}";
-			uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}";
+			uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}&profanity={ProfanityMode.ToString ().ToLower ()}";
 
 			Debug.WriteLine ($"Request Uri: {uriBuilder.Uri}");
 
@@ -157,7 +166,7 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
-		/// Returns Speech to Text results for the given audio input.
+		/// Returns Speech to Text results for the given audio input.  Begins sending the audio stream to the server immediately.
 		/// </summary>
 		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
 		/// <param name="audioFilePath">Audio file path.</param>

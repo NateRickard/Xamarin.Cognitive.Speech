@@ -40,6 +40,7 @@
     <Compile Include="Constants\MimeTypes.cs" />
     <Compile Include="Api\PushStreamContent.cs" />
     <Compile Include="Model\RecognitionSpeechResult.cs" />
+    <Compile Include="Model\ProfanityMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />
