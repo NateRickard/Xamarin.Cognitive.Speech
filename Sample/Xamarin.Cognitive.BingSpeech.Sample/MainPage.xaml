@@ -18,6 +18,7 @@
                 </Picker.Items>
             </Picker>
             <Button x:Name="RecordButton" Text="Record Me" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked" />
+            <Label Text="(15 sec max)" FontSize="14" HorizontalOptions="Center" />
             <Label Text="Output:" />
             <Label x:Name="ResultsLabel" HorizontalOptions="CenterAndExpand" LineBreakMode="WordWrap" MinimumHeightRequest="200" MinimumWidthRequest="400" BackgroundColor="Gray" />
         </StackLayout>
