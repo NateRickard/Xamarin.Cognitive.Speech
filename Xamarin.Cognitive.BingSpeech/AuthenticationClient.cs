@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace Xamarin.Cognitive.BingSpeech
 {
 	/// <summary>
-	/// Client that authenticates 
+	/// Client that authenticates to the Bing Speech API.
 	/// </summary>
-	public class AuthenticationClient
+	class AuthenticationClient
 	{
 		readonly string subscriptionId;
 
