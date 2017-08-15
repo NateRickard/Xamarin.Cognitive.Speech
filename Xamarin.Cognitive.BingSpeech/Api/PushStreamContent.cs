@@ -19,6 +19,8 @@
 // https://github.com/ASP-NET-MVC/aspnetwebstack/blob/d5188c8a75b5b26b09ab89bedfd7ee635ae2ff17/src/System.Net.Http.Formatting/PushStreamContent.cs
 // to work on NET Standard 1.4
 
+// https://github.com/paulcbetts/refit/blob/master/Refit/PushStreamContent.cs
+
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.IO;
