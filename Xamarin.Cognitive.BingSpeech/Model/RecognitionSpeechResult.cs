@@ -8,18 +8,20 @@
 		/// <summary>
 		/// A string indicating the result status.  Successful requests will return "Success"
 		/// </summary>
-		public string RecognitionStatus { get; set; }
+		public RecognitionStatus RecognitionStatus { get; set; }
 
 		/// <summary>
-		/// Gets or sets the offset.
+		/// Gets or sets the offset.  
+		/// The Offset element specifies the offset (in 100-nanosecond units) at which the phrase was recognized, relative to the start of the audio stream
 		/// </summary>
-		public string Offset { get; set; }
+		public long Offset { get; set; }
 
 
 		/// <summary>
-		/// The duration of speech.
+		/// The duration of speech.  
+		/// The Duration element specifies the duration (in 100-nanosecond units) of this speech phrase.
 		/// </summary>
-		public string Duration { get; set; }
+		public long Duration { get; set; }
 
 
 		/// <summary>

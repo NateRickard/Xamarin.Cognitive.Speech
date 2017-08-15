@@ -41,6 +41,7 @@
     <Compile Include="Api\PushStreamContent.cs" />
     <Compile Include="Model\RecognitionSpeechResult.cs" />
     <Compile Include="Model\ProfanityMode.cs" />
+    <Compile Include="Model\RecognitionStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />
