@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.props" Condition="Exists('$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{31478381-396A-446A-B75A-CD8C95420E09}</ProjectGuid>
+    <Description>A client library that makes it easy to work with the Microsoft Cognitive Services Bing Speech API on Xamarin.iOS, Xamarin.Android, and Xamarin.Forms and/or Portable Class Libraries.</Description>
+    <PackageId>Xamarin.Cognitive.BingSpeech</PackageId>
+    <PackageVersion>0.7.0</PackageVersion>
+    <Authors>Nate Rickard</Authors>
+    <DevelopmentDependency>false</DevelopmentDependency>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Xamarin.Cognitive.BingSpeech.NuGet</RootNamespace>
+    <UsePartialTypes>false</UsePartialTypes>
+    <AssemblyName>Xamarin.Cognitive.BingSpeech.NuGet</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <Owners>Nate Rickard</Owners>
+    <Copyright>Copyright © Nate Rickard</Copyright>
+    <PackageTags>xamarin, microsoft, pcl, android, xamarin.forms, ios, speech, cognitive, bing, SDK, speech to text, STT, speech recognition</PackageTags>
+    <Title>Xamarin client for the Microsoft Cognitive Services Bing Speech API</Title>
+    <Summary>Xamarin.Cognitive.Face is a client library that makes it easy to work with the Microsoft Cognitive Services Face API on Xamarin.iOS, Xamarin.Android, and Xamarin.Forms and/or Portable Class Library (PCL) projects.</Summary>
+    <PackageProjectUrl>https://github.com/NateRickard/Xamarin.Cognitive.BingSpeech</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/NateRickard/Xamarin.Cognitive.BingSpeech/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <OutputPath>bin\Debug</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="readme.txt">
+      <IncludeInPackage>true</IncludeInPackage>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging">
+      <Version>0.1.324</Version>
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xamarin.Cognitive.BingSpeech\Xamarin.Cognitive.BingSpeech.csproj">
+      <Project>{64BFADA8-284B-4EB6-BDC6-4AAD60D5E228}</Project>
+      <Name>Xamarin.Cognitive.BingSpeech</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
+  <Import Project="$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.targets" Condition="Exists('$(NuGetAuthoringPath)\NuGet.Packaging.Authoring.targets')" />
+</Project>
