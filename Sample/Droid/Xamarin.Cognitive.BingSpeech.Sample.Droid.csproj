@@ -94,7 +94,7 @@
       <HintPath>..\..\packages\PCLStorage.1.0.2\lib\monoandroid\PCLStorage.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.AudioRecorder">
-      <HintPath>..\..\packages\Plugin.AudioRecorder.0.5.6-prerelease\lib\monoandroid71\Plugin.AudioRecorder.dll</HintPath>
+      <HintPath>..\..\packages\Plugin.AudioRecorder.0.6.1-prerelease\lib\monoandroid71\Plugin.AudioRecorder.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
