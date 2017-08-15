@@ -3,9 +3,9 @@ using System.Net;
 
 namespace Xamarin.Cognitive.BingSpeech
 {
-	public static class ExceptionExtensions
+	internal static class ExceptionExtensions
 	{
-		public static bool HasWebResponseStatus (this Exception ex, HttpStatusCode code)
+		public static bool HasWebResponseStatus(this Exception ex, HttpStatusCode code)
 		{
 			if (ex is WebException webEx)
 			{
