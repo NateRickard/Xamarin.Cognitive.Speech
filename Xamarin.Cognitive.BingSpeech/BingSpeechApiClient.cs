@@ -12,6 +12,9 @@ using System.Text;
 
 namespace Xamarin.Cognitive.BingSpeech
 {
+	/// <summary>
+	/// Bing speech API client.
+	/// </summary>
 	public class BingSpeechApiClient
 	{
 		const int BufferSize = 1024;
@@ -21,7 +24,7 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// Gets the auth client.
 		/// </summary>
 		/// <value>The auth client.</value>
-		public AuthenticationClient AuthClient { get; private set; }
+		AuthenticationClient AuthClient { get; set; }
 
 
 		/// <summary>
@@ -59,9 +62,24 @@ namespace Xamarin.Cognitive.BingSpeech
 		public string ApiVersion { get; set; } = "v1";
 
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.BingSpeechApiClient"/> class.
+		/// </summary>
+		/// <param name="subscriptionKey">A valid subscription key for the Bing Speech API.</param>
 		public BingSpeechApiClient (string subscriptionKey)
 		{
 			AuthClient = new AuthenticationClient (subscriptionKey);
+		}
+
+
+		/// <summary>
+		/// Calls to the authentication endpoint to get a JWT token for authentication to the Bing Speech API.  Token is cached and valid for 9 minutes.
+		/// </summary>
+		/// <param name="forceNewToken">If set to <c>true</c>, force new token even if there is already a cached token.</param>
+		/// <remarks>This is called automatically when calling any of the SpeechToText* methods.  Call this separately up front to decrease latency on the initial API call.</remarks>
+		public async Task Authenticate (bool forceNewToken = false)
+		{
+			await AuthClient.Authenticate (forceNewToken);
 		}
 
 
@@ -151,10 +169,10 @@ namespace Xamarin.Cognitive.BingSpeech
 					var file = await root.GetFileAsync (audioFilePath);
 
 					using (outputStream) //must close/dispose output stream to notify that content is done
-					using (var audioStream = await file.OpenAsync (FileAccess.Read))
+				   using (var audioStream = await file.OpenAsync (FileAccess.Read))
 					{
-						//read 1024 (BufferSize) (max) raw bytes from the input audio file
-						buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
+					   //read 1024 (BufferSize) (max) raw bytes from the input audio file
+					   buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
 
 						while ((bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0)
 						{
@@ -222,6 +240,10 @@ namespace Xamarin.Cognitive.BingSpeech
 
 		void PopulateRequestContent (HttpRequestMessage request, Stream audioStream, int channelCount, int sampleRate, int bitsPerSample)
 		{
+			const int audioDataWaitInterval = 100;
+			const int maxReadRetries = 10; //times
+			const int readDelay = 10; //ms
+
 			request.Content = new PushStreamContent (async (outputStream, httpContext, transportContext) =>
 			{
 				try
@@ -230,35 +252,50 @@ namespace Xamarin.Cognitive.BingSpeech
 					int bytesRead = 0;
 
 					using (outputStream) //must close/dispose output stream to notify that content is done
-					{
+				   {
 						if (audioStream.CanRead)
 						{
-							WriteWaveHeader (outputStream, channelCount, sampleRate, bitsPerSample);
+						   //write a wav/riff header to the stream
+						   WriteWaveHeader (outputStream, channelCount, sampleRate, bitsPerSample);
 
-							Debug.WriteLine ("Creating buffer, audio stream length is {0}", audioStream.Length);
+							var totalWait = 0;
 
-							if (audioStream.Length < BufferSize)
+						   //wait up to (audioDataWaitInterval * maxReadRetries) for some data to populate
+						   while (audioStream.Length < BufferSize && totalWait < audioDataWaitInterval * maxReadRetries)
 							{
 								Debug.WriteLine ("No audio data detected, waiting 100 MS");
-								await Task.Delay (100);
+								await Task.Delay (audioDataWaitInterval);
+								totalWait += audioDataWaitInterval;
 							}
 
-							//read 1024 (BufferSize) (max) raw bytes from the input audio stream
-							buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
+						   //read 1024 (BufferSize) (max) raw bytes from the input audio stream
+						   buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
 
-							while (audioStream.CanRead && (bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0)
+							Debug.WriteLine ("Created buffer with length {0}", buffer.Length);
+
+							int readRetryCount = 0;
+
+							while (audioStream.CanRead && ((bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0 || readRetryCount < maxReadRetries))
 							{
-								//Debug.WriteLine ("Read {0} bytes from input stream, writing to output stream", bytesRead);
+								if (bytesRead > 0)
+								{
+								   //Debug.WriteLine ("Read {0} bytes from input stream, writing to output stream", bytesRead);
+								   readRetryCount = 0;
 
-								await outputStream.WriteAsync (buffer, 0, bytesRead);
+									await outputStream.WriteAsync (buffer, 0, bytesRead);
+								}
+								else
+								{
+									readRetryCount++;
+								   //await Task.Delay (20);
+							   }
 
-								//Debug.WriteLine ("Waiting 10 MS before next read");
-								await Task.Delay (10);
+								await Task.Delay (readDelay);
 							}
 
 							await outputStream.FlushAsync ();
 
-							Debug.WriteLine ("Wrote {0} bytes to outout stream", outputStream.Length);
+							Debug.WriteLine ("Wrote {0} bytes to output stream, closing", outputStream.Length);
 						}
 					}
 				}
