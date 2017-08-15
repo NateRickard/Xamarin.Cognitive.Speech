@@ -39,6 +39,10 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			}
 
 			bingSpeechClient = new BingSpeechApiClient (Keys.BingSpeech.SubscriptionKey);
+
+			//go fetch an auth token up frot - this should decrease latecy on the first call.
+			//	Otherwise, this would be called automatically the first time I use the speech client
+			Task.Run (() => bingSpeechClient.Authenticate ());
 		}
 
 
