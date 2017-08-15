@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Plugin.AudioRecorder;
@@ -11,6 +12,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 	{
 		AudioRecorderService recorder;
 		BingSpeechApiClient bingSpeechClient;
+		OutputMode outputMode;
 
 
 		public MainPage ()
@@ -58,6 +60,26 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 
 					RecordButton.Text = "Stop";
 					RecordButton.IsEnabled = true;
+
+					var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
+					var profanityMode = (ProfanityMode) Enum.Parse (typeof (ProfanityMode), ProfanityModePicker.SelectedItem.ToString ());
+					outputMode = (OutputMode) Enum.Parse (typeof (OutputMode), OutputModePicker.SelectedItem.ToString ());
+
+					//set the selected recognition mode
+					bingSpeechClient.RecognitionMode = recognitionMode;
+					bingSpeechClient.ProfanityMode = profanityMode;
+
+					if (SteamSwitch.IsToggled)
+					{
+						spinner.IsVisible = true;
+						spinner.IsRunning = true;
+
+						var resultText = await SpeechToText ();
+						ResultsLabel.Text = resultText ?? "No Results!";
+
+						spinner.IsVisible = false;
+						spinner.IsRunning = false;
+					}
 				}
 				else
 				{
@@ -77,73 +99,125 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		}
 
 
-		void Recorder_AudioInputReceived (object sender, string audioFile)
+		async void Recorder_AudioInputReceived (object sender, string audioFile)
+		{
+			Device.BeginInvokeOnMainThread (() =>
+			{
+				RecordButton.Text = "Record";
+				spinner.IsVisible = true;
+				spinner.IsRunning = true;
+			});
+
+			if (audioFile != null && !SteamSwitch.IsToggled)
+			{
+				var resultText = await SpeechToText (audioFile);
+
+				Device.BeginInvokeOnMainThread (() =>
+				{
+					ResultsLabel.Text = resultText ?? "No Results!";
+					spinner.IsVisible = false;
+					spinner.IsRunning = false;
+				});
+			}
+		}
+
+
+		async Task<string> SpeechToText (string audioFile)
+		{
+			try
+			{
+				switch (outputMode)
+				{
+					case OutputMode.Simple:
+						var simpleResult = await bingSpeechClient.SpeechToTextSimple (audioFile);
+
+						return ProcessResult (simpleResult);
+					case OutputMode.Detailed:
+						var detailedResult = await bingSpeechClient.SpeechToTextDetailed (audioFile);
+
+						return ProcessResult (detailedResult);
+				}
+
+				return null;
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine (ex);
+				throw;
+			}
+		}
+
+
+		async Task<string> SpeechToText ()
+		{
+			try
+			{
+				using (var stream = recorder.GetAudioFileStream ())
+				{
+					switch (outputMode)
+					{
+						case OutputMode.Simple:
+							var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.ChannelCount, recorder.AudioStreamDetails.SampleRate, recorder.AudioStreamDetails.BitsPerSample);
+
+							return ProcessResult (simpleResult);
+						case OutputMode.Detailed:
+							var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, recorder.AudioStreamDetails.ChannelCount, recorder.AudioStreamDetails.SampleRate, recorder.AudioStreamDetails.BitsPerSample);
+
+							return ProcessResult (detailedResult);
+					}
+				}
+
+				return null;
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine (ex);
+				throw;
+			}
+		}
+
+
+		string ProcessResult (RecognitionSpeechResult speechResult)
 		{
 			string resultText = null;
 
-			Device.BeginInvokeOnMainThread (async () =>
+			if (speechResult != null)
 			{
-				try
-				{
-					RecordButton.Text = "Record";
-					spinner.IsVisible = true;
-					spinner.IsRunning = true;
+				resultText = $"Recognition Status: {speechResult.RecognitionStatus}\r\n" +
+					$"DisplayText: {speechResult.DisplayText}\r\n" +
+					$"Offset: {speechResult.Offset}\r\n" +
+					$"Duration: {speechResult.Duration}";
+			}
 
-					var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
-					var outputMode = (OutputMode) Enum.Parse (typeof (OutputMode), OutputModePicker.SelectedItem.ToString ());
-					var profanityMode = (ProfanityMode) Enum.Parse (typeof (ProfanityMode), ProfanityModePicker.SelectedItem.ToString ());
+			System.Diagnostics.Debug.WriteLine (resultText);
 
-					if (audioFile != null)
-					{
-						//set the selected recognition mode
-						bingSpeechClient.RecognitionMode = recognitionMode;
-						bingSpeechClient.ProfanityMode = profanityMode;
+			return resultText;
+		}
 
-						switch (outputMode)
-						{
-							case OutputMode.Simple:
-								var simpleResult = await bingSpeechClient.SpeechToTextSimple (audioFile);
 
-								if (simpleResult != null)
-								{
-									resultText = $"Recognition Status: {simpleResult.RecognitionStatus}\r\n" +
-										$"DisplayText: {simpleResult.DisplayText}\r\n" +
-										$"Offset: {simpleResult.Offset}\r\n" +
-										$"Duration: {simpleResult.Duration}";
-								}
-								break;
-							case OutputMode.Detailed:
-								var detailedResult = await bingSpeechClient.SpeechToTextDetailed (audioFile);
+		string ProcessResult (RecognitionResult recognitionResult)
+		{
+			string resultText = null;
 
-								if (detailedResult != null && detailedResult.Results.Any ())
-								{
-									resultText = $"Recognition Status: {detailedResult.RecognitionStatus}\r\n" +
-										$"Offset: {detailedResult.Offset}\r\n" +
-										$"Duration: {detailedResult.Duration}\r\n";
+			if (recognitionResult != null && recognitionResult.Results.Any ())
+			{
+				resultText = $"Recognition Status: {recognitionResult.RecognitionStatus}\r\n" +
+					$"Offset: {recognitionResult.Offset}\r\n" +
+					$"Duration: {recognitionResult.Duration}\r\n";
 
-									var result = detailedResult.Results.First ();
+				var speechResult = recognitionResult.Results.First ();
 
-									resultText += $"--::First Result::--\r\n" +
-										$"Confidence: {result.Confidence}\r\n" +
-										$"Lexical: {result.Lexical}\r\n" +
-										$"Display: {result.Display}\r\n" +
-										$"ITN: {result.ITN}\r\n" +
-										$"Masked ITN: {result.MaskedITN}";
-								}
-								break;
-						}
+				resultText += $"--::First Result::--\r\n" +
+					$"Confidence: {speechResult.Confidence}\r\n" +
+					$"Lexical: {speechResult.Lexical}\r\n" +
+					$"Display: {speechResult.Display}\r\n" +
+					$"ITN: {speechResult.ITN}\r\n" +
+					$"Masked ITN: {speechResult.MaskedITN}";
+			}
 
-						System.Diagnostics.Debug.WriteLine (resultText);
-						ResultsLabel.Text = resultText ?? "No Results!";
-						spinner.IsVisible = false;
-						spinner.IsRunning = false;
-					}
-				}
-				catch (Exception ex)
-				{
-					System.Diagnostics.Debug.WriteLine (ex);
-				}
-			});
+			System.Diagnostics.Debug.WriteLine (resultText);
+
+			return resultText;
 		}
 	}
 }

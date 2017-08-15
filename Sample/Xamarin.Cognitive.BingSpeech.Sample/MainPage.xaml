@@ -25,6 +25,10 @@
                     <x:String>Raw</x:String>
                 </Picker.Items>
             </Picker>
+            <StackLayout Orientation="Horizontal">
+                <Switch x:Name="SteamSwitch" VerticalOptions="Center" />
+                <Label Text="Send audio data while recording"  VerticalOptions="Center" />
+            </StackLayout>
             <Button x:Name="RecordButton" Text="Record Me" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked" />
             <Label Text="(15 sec max)" FontSize="14" HorizontalOptions="Center" />
             <Label Text="Output:" />
