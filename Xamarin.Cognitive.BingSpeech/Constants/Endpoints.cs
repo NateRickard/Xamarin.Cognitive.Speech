@@ -4,7 +4,15 @@
 	{
 		internal static class Endpoints
 		{
-			internal const string AuthApi = "https://api.cognitive.microsoft.com/sts/v1.0/issueToken";
+			internal static class Authentication
+			{
+				internal const string Host = "api.cognitive.microsoft.com";
+
+				internal const int Port = 443;
+
+				internal const string Path = "/sts/v1.0/issueToken";
+			}
+
 
 			internal static class BingSpeechApi
 			{
