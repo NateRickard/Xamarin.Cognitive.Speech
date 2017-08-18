@@ -8,7 +8,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Xamarin.Cognitive.BingSpeech.Model;
 using System.IO;
-using System.Text;
 
 namespace Xamarin.Cognitive.BingSpeech
 {
@@ -18,7 +17,10 @@ namespace Xamarin.Cognitive.BingSpeech
 	public class BingSpeechApiClient
 	{
 		const int BufferSize = 1024;
-		int retryCount;
+		const int DefaultChannelCount = 1;
+		const int DefaultBitsPerSample = 16;
+
+		bool requestRetried;
 
 		/// <summary>
 		/// Gets the auth client.
@@ -94,7 +96,7 @@ namespace Xamarin.Cognitive.BingSpeech
 				uriBuilder.Path += $"/{RecognitionMode.ToString ().ToLower ()}/cognitiveservices/{ApiVersion}";
 				uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}&profanity={ProfanityMode.ToString ().ToLower ()}";
 
-				Debug.WriteLine ($"Request Uri: {uriBuilder.Uri}");
+				Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");
 
 				var request = new HttpRequestMessage (HttpMethod.Post, uriBuilder.Uri);
 
@@ -115,50 +117,93 @@ namespace Xamarin.Cognitive.BingSpeech
 		}
 
 
-		async Task<string> SendRequest (HttpRequestMessage request)
+		async Task<string> SendRequest (Func<HttpRequestMessage> requestFactory, Func<HttpContent> contentFactory)
 		{
 			try
 			{
 				using (var client = new HttpClient ())
 				{
-					var response = await client.SendAsync (request);
+					var request = requestFactory ();
+					request.Content = contentFactory ();
 
-					//if we get a valid response (non-null & no exception), then reset our retry count & return the response
+					var response = await client.SendAsync (request).ConfigureAwait (false);
+
 					if (response != null)
 					{
-						retryCount = 0;
-						Debug.WriteLine ($"sendRequest returned {response.StatusCode}");
+						Debug.WriteLine ($"SendRequest returned {response.StatusCode}");
 
-						return await response.Content.ReadAsStringAsync ();
+						if (response.IsSuccessStatusCode)
+						{
+							//if we get a valid response (non-null, no exception, and not forbidden), then reset our requestRetried var & return the response
+							requestRetried = false;
+
+							return await response.Content.ReadAsStringAsync ();
+						}
+
+						//handle expired auth token
+						if ((response.StatusCode == HttpStatusCode.Forbidden || response.StatusCode == HttpStatusCode.Unauthorized) && !requestRetried)
+						{
+							//attempt to re-auth
+							await AuthClient.Authenticate (true);
+							requestRetried = true; //just so we don't retry endlessly...
+
+							//re-create the request and copy the content, then send it again
+							return await SendRequest (requestFactory, () => CopyRequestContent (request.Content));
+						}
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine ("Error in sendRequest: {0}", ex.Message);
-
-				//handle expired auth token
-				if (ex.HasWebResponseStatus (HttpStatusCode.Forbidden) && retryCount < 1)
-				{
-					await AuthClient.Authenticate (true);
-					retryCount++;
-
-					return await SendRequest (request);
-				}
-			}
-			finally
-			{
-				//release the underlying file stream
-				request.Content?.Dispose ();
+				Debug.WriteLine ("Error in sendRequest: {0}", ex);
+				throw;
 			}
 
 			return null;
 		}
 
 
-		void PopulateRequestContent (HttpRequestMessage request, string audioFilePath)
+		HttpContent CopyRequestContent (HttpContent content)
 		{
-			request.Content = new PushStreamContent (async (outputStream, httpContext, transportContext) =>
+			return new PushStreamContent (async (outputStream, httpContext, transportContext) =>
+			{
+				try
+				{
+					byte [] buffer = null;
+					int bytesRead = 0;
+
+					using (outputStream) //must close/dispose output stream to notify that content is done
+					{
+						// this is not working for PushStreamContent?
+						//await content.CopyToAsync (outputStream);
+
+						//this is working - let's copy the content!
+						using (var stream = await content.ReadAsStreamAsync ())
+						{
+							//read 1024 (BufferSize) (max) raw bytes from the input audio file
+							buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) stream.Length))];
+
+							while ((bytesRead = await stream.ReadAsync (buffer, 0, buffer.Length)) != 0)
+							{
+								await outputStream.WriteAsync (buffer, 0, bytesRead);
+							}
+
+							await outputStream.FlushAsync ();
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine (ex);
+					throw;
+				}
+			}, new MediaTypeHeaderValue (Constants.MimeTypes.WavAudio));
+		}
+
+
+		HttpContent PopulateRequestContent (string audioFilePath)
+		{
+			return new PushStreamContent (async (outputStream, httpContext, transportContext) =>
 			{
 				try
 				{
@@ -169,10 +214,10 @@ namespace Xamarin.Cognitive.BingSpeech
 					var file = await root.GetFileAsync (audioFilePath);
 
 					using (outputStream) //must close/dispose output stream to notify that content is done
-				   using (var audioStream = await file.OpenAsync (FileAccess.Read))
+					using (var audioStream = await file.OpenAsync (FileAccess.Read))
 					{
-					   //read 1024 (BufferSize) (max) raw bytes from the input audio file
-					   buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
+						//read 1024 (BufferSize) (max) raw bytes from the input audio file
+						buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
 
 						while ((bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0)
 						{
@@ -191,106 +236,63 @@ namespace Xamarin.Cognitive.BingSpeech
 		}
 
 
-		void WriteWaveHeader (Stream stream, int channelCount, int sampleRate, int bitsPerSample)
+		HttpContent PopulateRequestContent (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null, int streamReadDelay = 30)
 		{
-			using (var writer = new BinaryWriter (stream, Encoding.UTF8))
-			{
-				writer.Seek (0, SeekOrigin.Begin);
-
-				//chunk ID
-				writer.Write ('R');
-				writer.Write ('I');
-				writer.Write ('F');
-				writer.Write ('F');
-
-				writer.Write (-1); // -1 - Unknown size
-
-				//format
-				writer.Write ('W');
-				writer.Write ('A');
-				writer.Write ('V');
-				writer.Write ('E');
-
-				//subchunk 1 ID
-				writer.Write ('f');
-				writer.Write ('m');
-				writer.Write ('t');
-				writer.Write (' ');
-
-				writer.Write (16); //subchunk 1 (fmt) size
-				writer.Write ((short) 1); //PCM audio format
-
-				writer.Write ((short) channelCount);
-				writer.Write (sampleRate);
-				writer.Write (sampleRate * 2);
-				writer.Write ((short) 2); //block align
-				writer.Write ((short) bitsPerSample);
-
-				//subchunk 2 ID
-				writer.Write ('d');
-				writer.Write ('a');
-				writer.Write ('t');
-				writer.Write ('a');
-
-				//subchunk 2 (data) size
-				writer.Write (-1); // -1 - Unknown size
-			}
-		}
-
-
-		void PopulateRequestContent (HttpRequestMessage request, Stream audioStream, int channelCount, int sampleRate, int bitsPerSample)
-		{
-			const int audioDataWaitInterval = 100;
+			const int audioDataWaitInterval = 100; //ms
 			const int maxReadRetries = 10; //times
-			const int readDelay = 10; //ms
 
-			request.Content = new PushStreamContent (async (outputStream, httpContext, transportContext) =>
+			return new PushStreamContent (async (outputStream, httpContext, transportContext) =>
 			{
 				try
 				{
 					byte [] buffer = null;
 					int bytesRead = 0;
+					int readRetryCount = 0;
 
 					using (outputStream) //must close/dispose output stream to notify that content is done
-				   {
+					{
 						if (audioStream.CanRead)
 						{
-						   //write a wav/riff header to the stream
-						   WriteWaveHeader (outputStream, channelCount, sampleRate, bitsPerSample);
-
 							var totalWait = 0;
 
-						   //wait up to (audioDataWaitInterval * maxReadRetries) for some data to populate
-						   while (audioStream.Length < BufferSize && totalWait < audioDataWaitInterval * maxReadRetries)
+							//wait up to (audioDataWaitInterval * maxReadRetries) for some data to populate
+							while (audioStream.Length < BufferSize && totalWait < audioDataWaitInterval * maxReadRetries)
 							{
 								Debug.WriteLine ("No audio data detected, waiting 100 MS");
 								await Task.Delay (audioDataWaitInterval);
 								totalWait += audioDataWaitInterval;
 							}
 
-						   //read 1024 (BufferSize) (max) raw bytes from the input audio stream
-						   buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
+							//write a wav/riff header to the stream
+							outputStream.WriteWaveHeader (channelCount, sampleRate, bitsPerSample);
 
-							Debug.WriteLine ("Created buffer with length {0}", buffer.Length);
+							//read 1024 (BufferSize) (max) raw bytes from the input audio stream
+							buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
 
-							int readRetryCount = 0;
+							//probably a better way to do this... but if the caller has passed a Task in for us to determine the end of recording, we'll use that to see if it's ongoing
+							//	Otherwise, we'll always assume that the Stream is being populated and we'll fall back to using delays to attempt to wait for the end of stream
+							var tcs = new TaskCompletionSource<bool> ();
+							var waitTask = recordingTask ?? tcs.Task;
 
-							while (audioStream.CanRead && ((bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0 || readRetryCount < maxReadRetries))
+							// loop while the stream is being populated... attempt to read <buffer.Length> bytes per loop, and see if we should keep checking, either via Task or read retries (when 0 bytes read)
+							while (audioStream.CanRead &&
+								   ((bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0 || !waitTask.Wait (streamReadDelay)))
 							{
 								if (bytesRead > 0)
 								{
-								   //Debug.WriteLine ("Read {0} bytes from input stream, writing to output stream", bytesRead);
-								   readRetryCount = 0;
+									readRetryCount = -1;
 
+									//write the bytes to the output stream
 									await outputStream.WriteAsync (buffer, 0, bytesRead);
 								}
-								else
-								{
-									readRetryCount++;
-								   //await Task.Delay (20);
-							   }
 
-								await Task.Delay (readDelay);
+								readRetryCount++;
+
+								//again, only using read retry timeouts if we don't have a Task
+								if (recordingTask == null && readRetryCount >= maxReadRetries)
+								{
+									tcs.SetResult (true);
+								}
 							}
 
 							await outputStream.FlushAsync ();
@@ -320,11 +322,9 @@ namespace Xamarin.Cognitive.BingSpeech
 
 			try
 			{
-				var request = CreateRequest (OutputMode.Simple);
-
-				PopulateRequestContent (request, audioFilePath);
-
-				var response = await SendRequest (request);
+				var response = await SendRequest (
+					() => CreateRequest (OutputMode.Simple),
+					() => PopulateRequestContent (audioFilePath));
 
 				var result = JsonConvert.DeserializeObject<RecognitionSpeechResult> (response);
 
@@ -339,6 +339,20 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
+		/// Returns Speech to Text results for the given audio input.  Assumes single channel (mono) audio at 16 bits per sample.
+		/// </summary>
+		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
+		/// <param name="audioStream">Audio stream containing the speech.</param>
+		/// <param name="sampleRate">The sample rate of the audio stream.</param>
+		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
+		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		public Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int sampleRate, Task recordingTask = null)
+		{
+			return SpeechToTextSimple (audioStream, DefaultChannelCount, sampleRate, DefaultBitsPerSample, recordingTask);
+		}
+
+
+		/// <summary>
 		/// Returns Speech to Text results for the given audio input.
 		/// </summary>
 		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
@@ -346,18 +360,17 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <param name="channelCount">The number of channels in the audio stream.</param>
 		/// <param name="sampleRate">The sample rate of the audio stream.</param>
 		/// <param name="bitsPerSample">The bits per sample of the audio stream.</param>
+		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
 		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
-		public async Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample)
+		public async Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null)
 		{
 			await AuthClient.Authenticate ();
 
 			try
 			{
-				var request = CreateRequest (OutputMode.Simple);
-
-				PopulateRequestContent (request, audioStream, channelCount, sampleRate, bitsPerSample);
-
-				var response = await SendRequest (request);
+				var response = await SendRequest (
+					() => CreateRequest (OutputMode.Simple),
+					() => PopulateRequestContent (audioStream, channelCount, sampleRate, bitsPerSample, recordingTask));
 
 				var result = JsonConvert.DeserializeObject<RecognitionSpeechResult> (response);
 
@@ -383,11 +396,9 @@ namespace Xamarin.Cognitive.BingSpeech
 
 			try
 			{
-				var request = CreateRequest (OutputMode.Detailed);
-
-				PopulateRequestContent (request, audioFilePath);
-
-				var response = await SendRequest (request);
+				var response = await SendRequest (
+					() => CreateRequest (OutputMode.Simple),
+					() => PopulateRequestContent (audioFilePath));
 
 				var result = JsonConvert.DeserializeObject<RecognitionResult> (response);
 
@@ -402,6 +413,20 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
+		/// Returns Speech to Text results for the given audio input.  Assumes single channel (mono) audio at 16 bits per sample.
+		/// </summary>
+		/// <returns>Detailed Speech to Text results, including the N best results for the given speech input.</returns>
+		/// <param name="audioStream">Audio stream containing the speech.</param>
+		/// <param name="sampleRate">The sample rate of the audio stream.</param>
+		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
+		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		public Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, int sampleRate, Task recordingTask = null)
+		{
+			return SpeechToTextDetailed (audioStream, DefaultChannelCount, sampleRate, DefaultBitsPerSample, recordingTask);
+		}
+
+
+		/// <summary>
 		/// Returns Speech to Text results for the given audio input.
 		/// </summary>
 		/// <returns>Detailed Speech to Text results, including the N best results for the given speech input.</returns>
@@ -409,18 +434,17 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <param name="channelCount">The number of channels in the audio stream.</param>
 		/// <param name="sampleRate">The sample rate of the audio stream.</param>
 		/// <param name="bitsPerSample">The bits per sample of the audio stream.</param>
+		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
 		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
-		public async Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample)
+		public async Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null)
 		{
 			await AuthClient.Authenticate ();
 
 			try
 			{
-				var request = CreateRequest (OutputMode.Detailed);
-
-				PopulateRequestContent (request, audioStream, channelCount, sampleRate, bitsPerSample);
-
-				var response = await SendRequest (request);
+				var response = await SendRequest (
+					() => CreateRequest (OutputMode.Detailed),
+					() => PopulateRequestContent (audioStream, channelCount, sampleRate, bitsPerSample, recordingTask));
 
 				var result = JsonConvert.DeserializeObject<RecognitionResult> (response);
 
