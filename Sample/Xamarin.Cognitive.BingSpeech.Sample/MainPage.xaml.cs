@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Plugin.AudioRecorder;
@@ -13,7 +13,6 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		AudioRecorderService recorder;
 		BingSpeechApiClient bingSpeechClient;
 		OutputMode outputMode;
-
 
 		public MainPage ()
 		{
@@ -31,16 +30,14 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 				TotalAudioTimeout = TimeSpan.FromSeconds (15) //Bing speech REST API has 15 sec max
 			};
 
-			recorder.AudioInputReceived += Recorder_AudioInputReceived;
-
 			if (Keys.BingSpeech.SubscriptionKey == Keys.BingSpeech.BadSubscriptionKey)
 			{
-				throw new Exception ("Get a Bind Speech API key here: https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-api/");
+				throw new Exception ("Get a Bing Speech API key here: https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-api/");
 			}
 
 			bingSpeechClient = new BingSpeechApiClient (Keys.BingSpeech.SubscriptionKey);
 
-			//go fetch an auth token up frot - this should decrease latecy on the first call.
+			//go fetch an auth token up front - this should decrease latecy on the first call. 
 			//	Otherwise, this would be called automatically the first time I use the speech client
 			Task.Run (() => bingSpeechClient.Authenticate ());
 		}
@@ -49,6 +46,27 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		async void Record_Clicked (object sender, EventArgs e)
 		{
 			await RecordAudio ();
+			//await RecordAudioAlternate ();
+		}
+
+
+		void updateUI (bool buttonEnabled, bool spinnerEnabled = false)
+		{
+			updateUI (buttonEnabled, null, spinnerEnabled);
+		}
+
+
+		void updateUI (bool buttonEnabled, string buttonText, bool spinnerEnabled = false)
+		{
+			RecordButton.IsEnabled = buttonEnabled;
+
+			if (buttonText != null)
+			{
+				RecordButton.Text = buttonText;
+			}
+
+			spinnerContent.IsVisible = spinnerEnabled;
+			spinner.IsRunning = spinnerEnabled;
 		}
 
 
@@ -56,43 +74,55 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		{
 			try
 			{
-				if (!recorder.IsRecording)
+				if (!recorder.IsRecording) //Record button clicked
 				{
-					RecordButton.IsEnabled = false;
+					updateUI (false);
 
+					//start recording audio
 					await recorder.StartRecording ();
 
-					RecordButton.Text = "Stop";
-					RecordButton.IsEnabled = true;
+					updateUI (true, "Stop");
 
+					//configure the Bing Speech client
 					var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
 					var profanityMode = (ProfanityMode) Enum.Parse (typeof (ProfanityMode), ProfanityModePicker.SelectedItem.ToString ());
 					outputMode = (OutputMode) Enum.Parse (typeof (OutputMode), OutputModePicker.SelectedItem.ToString ());
 
-					//set the selected recognition mode
+					//set the selected recognition mode & profanity mode
 					bingSpeechClient.RecognitionMode = recognitionMode;
 					bingSpeechClient.ProfanityMode = profanityMode;
 
+					//if we want to stream the audio as it's recording, we'll do that below
 					if (SteamSwitch.IsToggled)
 					{
-						spinner.IsVisible = true;
-						spinner.IsRunning = true;
-
+						//do streaming speech to text
 						var resultText = await SpeechToText ();
 						ResultsLabel.Text = resultText ?? "No Results!";
 
-						spinner.IsVisible = false;
-						spinner.IsRunning = false;
+						updateUI (true, "Record", false);
+					}
+					else //waits for the audio file to finish recording before starting to send audio data to the server
+					{
+						var audioFile = await recorder.AudioRecordTask;
+
+						updateUI (true, "Record", true);
+
+						//if we're not streaming the audio as we're recording, we'll use the file-based STT API here
+						if (audioFile != null)
+						{
+							var resultText = await SpeechToText (audioFile);
+							ResultsLabel.Text = resultText ?? "No Results!";
+						}
+
+						updateUI (true, false);
 					}
 				}
-				else
+				else //Stop button clicked
 				{
-					RecordButton.IsEnabled = false;
+					updateUI (false, true);
 
+					//stop the recording...
 					await recorder.StopRecording ();
-
-					RecordButton.Text = "Record";
-					RecordButton.IsEnabled = true;
 				}
 			}
 			catch (Exception ex)
@@ -103,24 +133,65 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		}
 
 
+		//Hook up this altrernate handler to try out the event-based API
+
+		async Task RecordAudioAlternate ()
+		{
+			if (!recorder.IsRecording)
+			{
+				recorder.AudioInputReceived -= Recorder_AudioInputReceived;
+				recorder.AudioInputReceived += Recorder_AudioInputReceived;
+
+				updateUI (false);
+
+				await recorder.StartRecording ();
+
+				updateUI (true, "Stop");
+
+				var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
+				var profanityMode = (ProfanityMode) Enum.Parse (typeof (ProfanityMode), ProfanityModePicker.SelectedItem.ToString ());
+				outputMode = (OutputMode) Enum.Parse (typeof (OutputMode), OutputModePicker.SelectedItem.ToString ());
+
+				//set the selected recognition mode & profanity mode
+				bingSpeechClient.RecognitionMode = recognitionMode;
+				bingSpeechClient.ProfanityMode = profanityMode;
+
+				if (SteamSwitch.IsToggled)
+				{
+					throw new Exception ("Use RecordAudio() with the Stream API - this is older code");
+				}
+			}
+			else //Stop button clicked
+			{
+				updateUI (false, true);
+
+				//stop the recording... recorded audio will be used in the Recorder_AudioInputReceived handler below
+				await recorder.StopRecording ();
+			}
+		}
+
+
 		async void Recorder_AudioInputReceived (object sender, string audioFile)
 		{
-			Device.BeginInvokeOnMainThread (() =>
-			{
-				RecordButton.Text = "Record";
-				spinner.IsVisible = true;
-				spinner.IsRunning = true;
-			});
+			//This handler is called once audio recording is complete. 
+			//	It is run on a background thread so we'll need to run UI code on the main thread
 
-			if (audioFile != null && !SteamSwitch.IsToggled)
+			Device.BeginInvokeOnMainThread (() => updateUI (false, "Record", true));
+
+			//if we're not streaming the audio as we're recording, we'll use the file-based STT API here
+			if (!SteamSwitch.IsToggled)
 			{
-				var resultText = await SpeechToText (audioFile);
+				string resultText = null;
+
+				if (audioFile != null)
+				{
+					resultText = await SpeechToText (audioFile);
+				}
 
 				Device.BeginInvokeOnMainThread (() =>
 				{
 					ResultsLabel.Text = resultText ?? "No Results!";
-					spinner.IsVisible = false;
-					spinner.IsRunning = false;
+					updateUI (true, false);
 				});
 			}
 		}
@@ -146,7 +217,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine (ex);
+				Debug.WriteLine (ex);
 				throw;
 			}
 		}
@@ -161,11 +232,11 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					switch (outputMode)
 					{
 						case OutputMode.Simple:
-							var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.ChannelCount, recorder.AudioStreamDetails.SampleRate, recorder.AudioStreamDetails.BitsPerSample);
+							var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.SampleRate, recorder.AudioRecordTask);
 
 							return ProcessResult (simpleResult);
 						case OutputMode.Detailed:
-							var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, recorder.AudioStreamDetails.ChannelCount, recorder.AudioStreamDetails.SampleRate, recorder.AudioStreamDetails.BitsPerSample);
+							var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, recorder.AudioStreamDetails.SampleRate, recorder.AudioRecordTask);
 
 							return ProcessResult (detailedResult);
 					}
@@ -175,7 +246,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine (ex);
+				Debug.WriteLine (ex);
 				throw;
 			}
 		}
@@ -193,7 +264,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					$"Duration: {speechResult.Duration}";
 			}
 
-			System.Diagnostics.Debug.WriteLine (resultText);
+			Debug.WriteLine (resultText);
 
 			return resultText;
 		}
@@ -219,7 +290,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					$"Masked ITN: {speechResult.MaskedITN}";
 			}
 
-			System.Diagnostics.Debug.WriteLine (resultText);
+			Debug.WriteLine (resultText);
 
 			return resultText;
 		}
