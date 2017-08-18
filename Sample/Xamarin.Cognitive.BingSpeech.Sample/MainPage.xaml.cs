@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Plugin.AudioRecorder;
-using Xamarin.Cognitive.BingSpeech.Model;
 using Xamarin.Forms;
 
 namespace Xamarin.Cognitive.BingSpeech.Sample
