@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Cognitive.BingSpeech.Model
+﻿namespace Xamarin.Cognitive.BingSpeech
 {
 	/// <summary>
 	/// A single speech result combining Recogniton result with Speech result.  This is used for Simple result mode.

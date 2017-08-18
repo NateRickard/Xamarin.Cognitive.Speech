@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Xamarin.Cognitive.BingSpeech.Model
+namespace Xamarin.Cognitive.BingSpeech
 {
 	/// <summary>
 	/// Recognition status.

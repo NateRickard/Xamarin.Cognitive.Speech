@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Cognitive.BingSpeech.Model
+﻿namespace Xamarin.Cognitive.BingSpeech
 {
 	/// <summary>
 	/// A Speech result that is part of a detailed resultset.

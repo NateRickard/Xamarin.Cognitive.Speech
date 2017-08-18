@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Xamarin.Cognitive.BingSpeech.Model
+namespace Xamarin.Cognitive.BingSpeech
 {
 	/// <summary>
 	/// Recognition result.

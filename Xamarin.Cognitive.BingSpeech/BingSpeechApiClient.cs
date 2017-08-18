@@ -6,7 +6,7 @@ using System.Diagnostics;
 using PCLStorage;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Xamarin.Cognitive.BingSpeech.Model;
+using Xamarin.Cognitive.BingSpeech;
 using System.IO;
 
 namespace Xamarin.Cognitive.BingSpeech
