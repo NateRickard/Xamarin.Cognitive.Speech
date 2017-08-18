@@ -78,7 +78,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					updateUI (false);
 
 					//start recording audio
-					var audoRecordTask = await recorder.StartRecording ();
+					var audioRecordTask = await recorder.StartRecording ();
 
 					updateUI (true, "Stop");
 
@@ -95,17 +95,17 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					if (SteamSwitch.IsToggled)
 					{
 						//does nothing more than turn the spinner on once recording is complete
-						_ = audoRecordTask.ContinueWith ((audioFile) => updateUI (false, "Record", true), TaskScheduler.FromCurrentSynchronizationContext ());
+						_ = audioRecordTask.ContinueWith ((audioFile) => updateUI (false, "Record", true), TaskScheduler.FromCurrentSynchronizationContext ());
 
 						//do streaming speech to text
-						var resultText = await SpeechToText (audoRecordTask);
+						var resultText = await SpeechToText (audioRecordTask);
 						ResultsLabel.Text = resultText ?? "No Results!";
 
 						updateUI (true, "Record", false);
 					}
 					else //waits for the audio file to finish recording before starting to send audio data to the server
 					{
-						var audioFile = await audoRecordTask;
+						var audioFile = await audioRecordTask;
 
 						updateUI (true, "Record", true);
 
@@ -225,7 +225,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		}
 
 
-		async Task<string> SpeechToText (Task audoRecordTask)
+		async Task<string> SpeechToText (Task audioRecordTask)
 		{
 			try
 			{
@@ -234,11 +234,11 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					switch (outputMode)
 					{
 						case OutputMode.Simple:
-							var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.SampleRate, audoRecordTask);
+							var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.SampleRate, audioRecordTask);
 
 							return ProcessResult (simpleResult);
 						case OutputMode.Detailed:
-							var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, recorder.AudioStreamDetails.SampleRate, audoRecordTask);
+							var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, recorder.AudioStreamDetails.SampleRate, audioRecordTask);
 
 							return ProcessResult (detailedResult);
 					}
