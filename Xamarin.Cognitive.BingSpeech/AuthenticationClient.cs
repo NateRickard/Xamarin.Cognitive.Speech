@@ -52,6 +52,8 @@ namespace Xamarin.Cognitive.BingSpeech
 
 					client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, subscriptionId);
 
+					Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");
+
 					var result = await client.PostAsync (uriBuilder.Uri, null);
 
 					return await result.Content.ReadAsStringAsync ();
@@ -59,7 +61,7 @@ namespace Xamarin.Cognitive.BingSpeech
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine ("Error during auth post: {0}", ex.Message);
+				Debug.WriteLine ("Error during auth post: {0}", ex);
 				throw;
 			}
 		}
