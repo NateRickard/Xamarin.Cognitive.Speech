@@ -5,9 +5,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{31478381-396A-446A-B75A-CD8C95420E09}</ProjectGuid>
-    <Description>A client library that makes it easy to work with the Microsoft Cognitive Services Bing Speech API on Xamarin.iOS, Xamarin.Android, and Xamarin.Forms and/or Portable Class Libraries.</Description>
+    <Description>A managed client library that makes it easy to work with the Microsoft Cognitive Services Bing Speech API on Xamarin.iOS, Xamarin.Android, and Xamarin.Forms and/or Portable Class Library projects.</Description>
     <PackageId>Xamarin.Cognitive.BingSpeech</PackageId>
-    <PackageVersion>0.7.1</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Authors>Nate Rickard</Authors>
     <DevelopmentDependency>false</DevelopmentDependency>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -19,10 +19,11 @@
     <Owners>Nate Rickard</Owners>
     <Copyright>Copyright © Nate Rickard</Copyright>
     <PackageTags>xamarin, microsoft, pcl, android, xamarin.forms, ios, speech, cognitive, bing, SDK, speech to text, STT, speech recognition</PackageTags>
-    <Title>Xamarin client for the Microsoft Cognitive Services Bing Speech API</Title>
-    <Summary>Xamarin.Cognitive.Face is a client library that makes it easy to work with the Microsoft Cognitive Services Face API on Xamarin.iOS, Xamarin.Android, and Xamarin.Forms and/or Portable Class Library (PCL) projects.</Summary>
+    <Title>Xamarin client for the Bing Speech API</Title>
+    <Summary>Xamarin.Cognitive.BingSpeech is a managed client library for the Microsoft Cognitive Services Bing Speech API</Summary>
     <PackageProjectUrl>https://github.com/NateRickard/Xamarin.Cognitive.BingSpeech</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/NateRickard/Xamarin.Cognitive.BingSpeech/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageReleaseNotes>- Initial release</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
