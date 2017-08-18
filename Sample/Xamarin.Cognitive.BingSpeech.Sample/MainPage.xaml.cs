@@ -94,6 +94,9 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					//if we want to stream the audio as it's recording, we'll do that below
 					if (SteamSwitch.IsToggled)
 					{
+						//does nothing more than turn the spinner on once recording is complete
+						_ = audoRecordTask.ContinueWith ((audioFile) => updateUI (false, "Record", true), TaskScheduler.FromCurrentSynchronizationContext ());
+
 						//do streaming speech to text
 						var resultText = await SpeechToText (audoRecordTask);
 						ResultsLabel.Text = resultText ?? "No Results!";
