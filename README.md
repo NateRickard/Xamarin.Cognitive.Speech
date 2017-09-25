@@ -45,6 +45,8 @@ I wanted to create something specific to mobile, that was updated and easy to us
 
 The included PCL assembly is compiled against Profile 111, which is currently the same profile used for PCL-based Xamarin.Forms solutions.
 
+You must have a valid Bing Speech API subscription key.  You can get a free trial key or create a permanent key in the [Bing Speech API portal](https://azure.microsoft.com/en-us/services/cognitive-services/speech/).
+
 
 ## Platform Configuration
 
@@ -60,6 +62,12 @@ Please review the [documentation here](https://developer.xamarin.com/guides/cros
 # Usage
 
 The [sample app](https://github.com/NateRickard/Xamarin.Cognitive.BingSpeech/tree/master/Sample) demonstrates everything shown below and more.
+
+The first thing you'll need to do is construct a new instance of the Bing Speech API client that will be used for your API calls:
+
+```C#
+BingSpeechApiClient bingSpeechClient = new BingSpeechApiClient ("My Bing Speech API Subscription Key");
+```
 
 The Bing Speech API has two distinct output modes that yeild different results.  More information on each output mode [can be found in the documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format).
 
