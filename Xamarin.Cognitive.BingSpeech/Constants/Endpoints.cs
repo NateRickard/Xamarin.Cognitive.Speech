@@ -1,27 +1,9 @@
 ﻿namespace Xamarin.Cognitive.BingSpeech
 {
-	static partial class Constants
+	static class Endpoints
 	{
-		internal static class Endpoints
-		{
-			internal static class Authentication
-			{
-				internal const string Host = "api.cognitive.microsoft.com";
+		public static Endpoint Authentication = new Endpoint ("api.cognitive.microsoft.com", "/sts/v1.0/issueToken");
 
-				internal const int Port = 443;
-
-				internal const string Path = "/sts/v1.0/issueToken";
-			}
-
-
-			internal static class BingSpeechApi
-			{
-				internal const string Host = "speech.platform.bing.com";
-
-				internal const int Port = 443;
-
-				internal const string Path = "/speech/recognition/";
-			}
-		}
+		public static Endpoint BingSpeechApi = new Endpoint ("speech.platform.bing.com", "/speech/recognition");
 	}
 }

@@ -7,7 +7,7 @@
     <ProjectGuid>{31478381-396A-446A-B75A-CD8C95420E09}</ProjectGuid>
     <Description>A managed client library that makes it easy to work with the Microsoft Cognitive Services Bing Speech API on Xamarin.iOS, Xamarin.Android, and Xamarin.Forms and/or Portable Class Library projects.</Description>
     <PackageId>Xamarin.Cognitive.BingSpeech</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.0.1</PackageVersion>
     <Authors>Nate Rickard</Authors>
     <DevelopmentDependency>false</DevelopmentDependency>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NuGet.Build.Packaging">
-      <Version>0.1.324</Version>
+      <Version>0.2.0</Version>
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>

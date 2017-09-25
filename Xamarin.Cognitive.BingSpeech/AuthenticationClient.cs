@@ -45,10 +45,10 @@ namespace Xamarin.Cognitive.BingSpeech
 			{
 				using (var client = new HttpClient ())
 				{
-					var uriBuilder = new UriBuilder ("https",
-													 Constants.Endpoints.Authentication.Host,
-													 Constants.Endpoints.Authentication.Port,
-													 Constants.Endpoints.Authentication.Path);
+					var uriBuilder = new UriBuilder (Endpoints.Authentication.Protocol,
+													 Endpoints.Authentication.Host,
+													 Endpoints.Authentication.Port,
+													 Endpoints.Authentication.Path);
 
 					client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, subscriptionId);
 
@@ -56,7 +56,12 @@ namespace Xamarin.Cognitive.BingSpeech
 
 					var result = await client.PostAsync (uriBuilder.Uri, null);
 
-					return await result.Content.ReadAsStringAsync ();
+					if (result.IsSuccessStatusCode)
+					{
+						return await result.Content.ReadAsStringAsync ();
+					}
+
+					throw new Exception ($"Unable to authenticate, auth endpoint returned: status code {result.StatusCode} ; Reason: {result.ReasonPhrase}");
 				}
 			}
 			catch (Exception ex)

@@ -6,7 +6,6 @@ using System.Diagnostics;
 using PCLStorage;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Xamarin.Cognitive.BingSpeech;
 using System.IO;
 
 namespace Xamarin.Cognitive.BingSpeech
@@ -27,6 +26,14 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </summary>
 		/// <value>The auth client.</value>
 		AuthenticationClient AuthClient { get; set; }
+
+
+		/// <summary>
+		/// Gets or sets the endpoint used to talk to the Speech API.
+		/// </summary>
+		/// <value>The endpoint.</value>
+		/// <remarks>To use a CRIS/Custom Speech Service endpoint, set this to a new <see cref="Endpoint"/> with the details for your CRIS service.</remarks>
+		public Endpoint SpeechEndpoint { get; set; } = Endpoints.BingSpeechApi;
 
 
 		/// <summary>
@@ -89,10 +96,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			try
 			{
-				var uriBuilder = new UriBuilder ("https",
-												 Constants.Endpoints.BingSpeechApi.Host,
-												 Constants.Endpoints.BingSpeechApi.Port,
-												 Constants.Endpoints.BingSpeechApi.Path);
+				var uriBuilder = new UriBuilder (SpeechEndpoint.Protocol,
+												 SpeechEndpoint.Host,
+												 SpeechEndpoint.Port,
+												 SpeechEndpoint.Path);
 				uriBuilder.Path += $"/{RecognitionMode.ToString ().ToLower ()}/cognitiveservices/{ApiVersion}";
 				uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}&profanity={ProfanityMode.ToString ().ToLower ()}";
 
@@ -105,7 +112,7 @@ namespace Xamarin.Cognitive.BingSpeech
 				request.Headers.Authorization = new AuthenticationHeaderValue (Constants.Keys.Bearer, AuthClient.Token);
 				request.Headers.Accept.ParseAdd (Constants.MimeTypes.Json);
 				request.Headers.Accept.ParseAdd (Constants.MimeTypes.Xml);
-				request.Headers.Host = Constants.Endpoints.BingSpeechApi.Host;
+				request.Headers.Host = SpeechEndpoint.Host;
 
 				return request;
 			}
@@ -158,6 +165,8 @@ namespace Xamarin.Cognitive.BingSpeech
 				Debug.WriteLine ("Error in sendRequest: {0}", ex);
 				throw;
 			}
+
+			Debug.WriteLine ("SendRequest: Unable to send successful request, returning null response");
 
 			return null;
 		}
@@ -276,7 +285,7 @@ namespace Xamarin.Cognitive.BingSpeech
 
 							// loop while the stream is being populated... attempt to read <buffer.Length> bytes per loop, and see if we should keep checking, either via Task or read retries (when 0 bytes read)
 							while (audioStream.CanRead &&
-								   ((bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0 || !waitTask.Wait (streamReadDelay)))
+								  ((bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0 || !waitTask.Wait (streamReadDelay)))
 							{
 								if (bytesRead > 0)
 								{
@@ -318,10 +327,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
 		public async Task<RecognitionSpeechResult> SpeechToTextSimple (string audioFilePath)
 		{
-			await AuthClient.Authenticate ();
-
 			try
 			{
+				await AuthClient.Authenticate ();
+
 				var response = await SendRequest (
 					() => CreateRequest (OutputMode.Simple),
 					() => PopulateRequestContent (audioFilePath));
@@ -364,10 +373,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
 		public async Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null)
 		{
-			await AuthClient.Authenticate ();
-
 			try
 			{
+				await AuthClient.Authenticate ();
+
 				var response = await SendRequest (
 					() => CreateRequest (OutputMode.Simple),
 					() => PopulateRequestContent (audioStream, channelCount, sampleRate, bitsPerSample, recordingTask));
@@ -392,10 +401,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
 		public async Task<RecognitionResult> SpeechToTextDetailed (string audioFilePath)
 		{
-			await AuthClient.Authenticate ();
-
 			try
 			{
+				await AuthClient.Authenticate ();
+
 				var response = await SendRequest (
 					() => CreateRequest (OutputMode.Simple),
 					() => PopulateRequestContent (audioFilePath));
@@ -438,10 +447,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
 		public async Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null)
 		{
-			await AuthClient.Authenticate ();
-
 			try
 			{
+				await AuthClient.Authenticate ();
+
 				var response = await SendRequest (
 					() => CreateRequest (OutputMode.Detailed),
 					() => PopulateRequestContent (audioStream, channelCount, sampleRate, bitsPerSample, recordingTask));
