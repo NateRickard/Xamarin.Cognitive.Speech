@@ -47,6 +47,12 @@ The included PCL assembly is compiled against Profile 111, which is currently th
 
 You must have a valid Bing Speech API subscription key.  You can get a free trial key or create a permanent key in the [Bing Speech API portal](https://azure.microsoft.com/en-us/services/cognitive-services/speech/).
 
+Once you have an API key, update the `keys.cs` file so the `SubscriptionKey` property is set to your API key:
+
+```C#
+public const string SubscriptionKey = "My Key Goes Here";
+```
+
 
 ## Platform Configuration
 
