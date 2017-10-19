@@ -218,3 +218,5 @@ Thumbs.db
 #Visual Studio
 .vs/
 project.lock.json
+*.props
+Sample/UWP/Xamarin.Cognitive.BingSpeech.Sample.UWP.nuget.targets
