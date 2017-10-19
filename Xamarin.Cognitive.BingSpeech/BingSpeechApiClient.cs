@@ -139,7 +139,7 @@ namespace Xamarin.Cognitive.BingSpeech
 					{
 						Debug.WriteLine ($"SendRequest returned {response.StatusCode}");
 
-						if (response.IsSuccessStatusCode)
+						if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.Continue)
 						{
 							//if we get a valid response (non-null, no exception, and not forbidden), then reset our requestRetried var & return the response
 							requestRetried = false;
