@@ -215,8 +215,6 @@ Thumbs.db
 #bitrise
 .bitrise*
 
-.vs/config/applicationhost.config
-.vs/slnx.sqlite
-.vs/VSWorkspaceState.json
-
+#Visual Studio
+.vs/
 project.lock.json
