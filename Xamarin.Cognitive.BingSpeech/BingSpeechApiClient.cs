@@ -219,8 +219,7 @@ namespace Xamarin.Cognitive.BingSpeech
 					byte [] buffer = null;
 					int bytesRead = 0;
 
-					var root = FileSystem.Current.LocalStorage;
-					var file = await root.GetFileAsync (audioFilePath);
+					var file = await FileSystem.Current.GetFileFromPathAsync(audioFilePath);
 
 					using (outputStream) //must close/dispose output stream to notify that content is done
 					using (var audioStream = await file.OpenAsync (FileAccess.Read))
