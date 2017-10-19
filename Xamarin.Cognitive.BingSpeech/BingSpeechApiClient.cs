@@ -328,15 +328,21 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			try
 			{
-				await AuthClient.Authenticate ();
+				if (!string.IsNullOrEmpty (audioFilePath))
+				{
+					await AuthClient.Authenticate ();
 
-				var response = await SendRequest (
-					() => CreateRequest (OutputMode.Simple),
-					() => PopulateRequestContent (audioFilePath));
+					var response = await SendRequest (
+						() => CreateRequest (OutputMode.Simple),
+						() => PopulateRequestContent (audioFilePath));
 
-				var result = JsonConvert.DeserializeObject<RecognitionSpeechResult> (response);
+					if (response != null)
+					{
+						return JsonConvert.DeserializeObject<RecognitionSpeechResult> (response);
+					}
+				}
 
-				return result;
+				return null;
 			}
 			catch (Exception ex)
 			{
@@ -380,9 +386,12 @@ namespace Xamarin.Cognitive.BingSpeech
 					() => CreateRequest (OutputMode.Simple),
 					() => PopulateRequestContent (audioStream, channelCount, sampleRate, bitsPerSample, recordingTask));
 
-				var result = JsonConvert.DeserializeObject<RecognitionSpeechResult> (response);
+				if (response != null)
+				{
+					return JsonConvert.DeserializeObject<RecognitionSpeechResult> (response);
+				}
 
-				return result;
+				return null;
 			}
 			catch (Exception ex)
 			{
@@ -408,9 +417,12 @@ namespace Xamarin.Cognitive.BingSpeech
 					() => CreateRequest (OutputMode.Simple),
 					() => PopulateRequestContent (audioFilePath));
 
-				var result = JsonConvert.DeserializeObject<RecognitionResult> (response);
+				if (response != null)
+				{
+					return JsonConvert.DeserializeObject<RecognitionResult> (response);
+				}
 
-				return result;
+				return null;
 			}
 			catch (Exception ex)
 			{
@@ -454,9 +466,12 @@ namespace Xamarin.Cognitive.BingSpeech
 					() => CreateRequest (OutputMode.Detailed),
 					() => PopulateRequestContent (audioStream, channelCount, sampleRate, bitsPerSample, recordingTask));
 
-				var result = JsonConvert.DeserializeObject<RecognitionResult> (response);
+				if (response != null)
+				{
+					return JsonConvert.DeserializeObject<RecognitionResult> (response);
+				}
 
-				return result;
+				return null;
 			}
 			catch (Exception ex)
 			{
