@@ -92,7 +92,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					bingSpeechClient.ProfanityMode = profanityMode;
 
 					//if we want to stream the audio as it's recording, we'll do that below
-					if (SteamSwitch.IsToggled)
+					if (StreamSwitch.IsToggled)
 					{
 						//does nothing more than turn the spinner on once recording is complete
 						_ = audioRecordTask.ContinueWith ((audioFile) => updateUI (false, "Record", true), TaskScheduler.FromCurrentSynchronizationContext ());
@@ -158,7 +158,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 				bingSpeechClient.RecognitionMode = recognitionMode;
 				bingSpeechClient.ProfanityMode = profanityMode;
 
-				if (SteamSwitch.IsToggled)
+				if (StreamSwitch.IsToggled)
 				{
 					throw new Exception ("Use RecordAudio() with the Stream API - this is older code");
 				}
@@ -181,7 +181,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			Device.BeginInvokeOnMainThread (() => updateUI (false, "Record", true));
 
 			//if we're not streaming the audio as we're recording, we'll use the file-based STT API here
-			if (!SteamSwitch.IsToggled)
+			if (!StreamSwitch.IsToggled)
 			{
 				string resultText = null;
 

@@ -27,7 +27,7 @@
                     </Picker.Items>
                 </Picker>
                 <StackLayout Orientation="Horizontal">
-                    <Switch x:Name="SteamSwitch" VerticalOptions="Center" />
+                    <Switch x:Name="StreamSwitch" VerticalOptions="Center" />
                     <Label Text="Send audio data while recording"  VerticalOptions="Center" />
                 </StackLayout>
                 <Button x:Name="RecordButton" Text="Record Me" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked" />
