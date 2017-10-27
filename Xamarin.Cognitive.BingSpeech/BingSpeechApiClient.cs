@@ -414,7 +414,7 @@ namespace Xamarin.Cognitive.BingSpeech
 				await AuthClient.Authenticate ();
 
 				var response = await SendRequest (
-					() => CreateRequest (OutputMode.Simple),
+					() => CreateRequest (OutputMode.Detailed),
 					() => PopulateRequestContent (audioFilePath));
 
 				if (response != null)
