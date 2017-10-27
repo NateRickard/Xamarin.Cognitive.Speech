@@ -56,8 +56,8 @@
     <Reference Include="PCLStorage">
       <HintPath>..\..\packages\PCLStorage.1.0.2\lib\portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac\PCLStorage.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.Cognitive.BingSpeech, Version=1.0.6501.36056, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xamarin.Cognitive.BingSpeech.1.0.2\lib\portable45-net45+win8+wpa81\Xamarin.Cognitive.BingSpeech.dll</HintPath>
+    <Reference Include="Xamarin.Cognitive.BingSpeech, Version=1.0.6509.20425, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Xamarin.Cognitive.BingSpeech.1.0.3\lib\portable45-net45+win8+wpa81\Xamarin.Cognitive.BingSpeech.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Core">
       <HintPath>..\..\packages\Xamarin.Forms.2.4.0.18342\lib\portable-win+net45+wp80+win81+wpa81\Xamarin.Forms.Core.dll</HintPath>
