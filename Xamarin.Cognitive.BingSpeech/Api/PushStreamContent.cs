@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Open Technologies, Inc.All rights reserved.
+// Copyright(c) Microsoft Open Technologies, Inc.All rights reserved.
 // Microsoft Open Technologies would like to thank its contributors, a list
 // of whom are at http://aspnetwebstack.codeplex.com/wikipage?title=Contributors.
 //

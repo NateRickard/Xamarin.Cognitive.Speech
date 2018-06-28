@@ -1,8 +1,8 @@
+using Plugin.AudioRecorder;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Plugin.AudioRecorder;
 using Xamarin.Forms;
 
 namespace Xamarin.Cognitive.BingSpeech.Sample
@@ -13,9 +13,9 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		BingSpeechApiClient bingSpeechClient;
 		OutputMode outputMode;
 
-		public MainPage ()
+		public MainPage()
 		{
-			InitializeComponent ();
+			InitializeComponent();
 
 			//setting these in XAML doesn't seem to be working
 			RecognitionModePicker.SelectedIndex = 0;
@@ -49,13 +49,13 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		}
 
 
-		void updateUI (bool buttonEnabled, bool spinnerEnabled = false)
+		void UpdateUI (bool buttonEnabled, bool spinnerEnabled = false)
 		{
-			updateUI (buttonEnabled, null, spinnerEnabled);
+			UpdateUI (buttonEnabled, null, spinnerEnabled);
 		}
 
 
-		void updateUI (bool buttonEnabled, string buttonText, bool spinnerEnabled = false)
+		void UpdateUI (bool buttonEnabled, string buttonText, bool spinnerEnabled = false)
 		{
 			RecordButton.IsEnabled = buttonEnabled;
 
@@ -75,12 +75,12 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			{
 				if (!recorder.IsRecording) //Record button clicked
 				{
-					updateUI (false);
+					UpdateUI (false);
 
 					//start recording audio
 					var audioRecordTask = await recorder.StartRecording ();
 
-					updateUI (true, "Stop");
+					UpdateUI (true, "Stop");
 
 					//configure the Bing Speech client
 					var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
@@ -95,19 +95,19 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					if (StreamSwitch.IsToggled)
 					{
 						//does nothing more than turn the spinner on once recording is complete
-						_ = audioRecordTask.ContinueWith ((audioFile) => updateUI (false, "Record", true), TaskScheduler.FromCurrentSynchronizationContext ());
+						_ = audioRecordTask.ContinueWith ((audioFile) => UpdateUI (false, "Record", true), TaskScheduler.FromCurrentSynchronizationContext ());
 
 						//do streaming speech to text
 						var resultText = await SpeechToText (audioRecordTask);
 						ResultsLabel.Text = resultText ?? "No Results!";
 
-						updateUI (true, "Record", false);
+						UpdateUI (true, "Record", false);
 					}
 					else //waits for the audio file to finish recording before starting to send audio data to the server
 					{
 						var audioFile = await audioRecordTask;
 
-						updateUI (true, "Record", true);
+						UpdateUI (true, "Record", true);
 
 						//if we're not streaming the audio as we're recording, we'll use the file-based STT API here
 						if (audioFile != null)
@@ -116,12 +116,12 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 							ResultsLabel.Text = resultText ?? "No Results!";
 						}
 
-						updateUI (true, false);
+						UpdateUI (true, false);
 					}
 				}
 				else //Stop button clicked
 				{
-					updateUI (false, true);
+					UpdateUI (false, true);
 
 					//stop the recording...
 					await recorder.StopRecording ();
@@ -135,7 +135,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		}
 
 
-		//Hook up this altrernate handler to try out the event-based API
+		//Hook up this alternate handler to try out the event-based API
 
 		async Task RecordAudioAlternate ()
 		{
@@ -144,11 +144,11 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 				recorder.AudioInputReceived -= Recorder_AudioInputReceived;
 				recorder.AudioInputReceived += Recorder_AudioInputReceived;
 
-				updateUI (false);
+				UpdateUI (false);
 
 				await recorder.StartRecording ();
 
-				updateUI (true, "Stop");
+				UpdateUI (true, "Stop");
 
 				var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
 				var profanityMode = (ProfanityMode) Enum.Parse (typeof (ProfanityMode), ProfanityModePicker.SelectedItem.ToString ());
@@ -165,7 +165,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			}
 			else //Stop button clicked
 			{
-				updateUI (false, true);
+				UpdateUI (false, true);
 
 				//stop the recording... recorded audio will be used in the Recorder_AudioInputReceived handler below
 				await recorder.StopRecording ();
@@ -178,7 +178,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			//This handler is called once audio recording is complete. 
 			//	It is run on a background thread so we'll need to run UI code on the main thread
 
-			Device.BeginInvokeOnMainThread (() => updateUI (false, "Record", true));
+			Device.BeginInvokeOnMainThread (() => UpdateUI (false, "Record", true));
 
 			//if we're not streaming the audio as we're recording, we'll use the file-based STT API here
 			if (!StreamSwitch.IsToggled)
@@ -193,7 +193,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 				Device.BeginInvokeOnMainThread (() =>
 				{
 					ResultsLabel.Text = resultText ?? "No Results!";
-					updateUI (true, false);
+					UpdateUI (true, false);
 				});
 			}
 		}

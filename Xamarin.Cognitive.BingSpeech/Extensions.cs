@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -11,7 +11,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			using (var writer = new BinaryWriter (stream, Encoding.UTF8))
 			{
-				writer.Seek (0, SeekOrigin.Begin);
+				if (writer.BaseStream.CanSeek)
+				{
+					writer.Seek (0, SeekOrigin.Begin);
+				}
 
 				//chunk ID
 				writer.Write ('R');
