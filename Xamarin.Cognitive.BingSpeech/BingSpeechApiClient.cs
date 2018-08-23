@@ -1,11 +1,11 @@
-using System;
-using System.Threading.Tasks;
-using System.Net;
 using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.IO;
+using System.Threading.Tasks;
 
 namespace Xamarin.Cognitive.BingSpeech
 {
@@ -38,8 +38,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <summary>
 		/// Gets or sets the Recognition language.
 		/// </summary>
-		/// <remarks>Supported locales can be found here: 
-		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#recognition-language</remarks>
+		/// <remarks>
+		/// Supported locales can be found here: 
+		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#recognition-language
+		/// </remarks>
 		public string RecognitionLanguage { get; set; } = "en-US";
 
 
@@ -47,10 +49,12 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// Gets or sets the recognition mode.
 		/// </summary>
 		/// <value>The recognition mode.</value>
-		/// <remarks>There are three modes of recognition: interactive, conversation, and dictation. 
+		/// <remarks>
+		/// There are three modes of recognition: interactive, conversation, and dictation. 
 		/// The recognition mode adjusts speech recognition based on how the users are likely to speak. 
 		/// Choose the appropriate recognition mode for your application.
-		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#recognition-modes</remarks>
+		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#recognition-modes
+		/// </remarks>
 		public RecognitionMode RecognitionMode { get; set; }
 
 
@@ -58,8 +62,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// Gets or sets the profanity mode.
 		/// </summary>
 		/// <value>The profanity mode.</value>
-		/// <remarks>You can control how the service handles profanity by setting the profanity mode.  
-		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#profanity-handling-in-speech-recognition</remarks>
+		/// <remarks>
+		/// You can control how the service handles profanity by setting the profanity mode.  
+		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#profanity-handling-in-speech-recognition
+		/// </remarks>
 		public ProfanityMode ProfanityMode { get; set; }
 
 
@@ -318,7 +324,9 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </summary>
 		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
 		/// <param name="audioFilePath">Audio file path.</param>
-		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		/// <remarks>
+		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
+		/// </remarks>
 		public async Task<RecognitionSpeechResult> SpeechToTextSimple (string audioFilePath)
 		{
 			try
@@ -354,7 +362,9 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <param name="audioStream">Audio stream containing the speech.</param>
 		/// <param name="sampleRate">The sample rate of the audio stream.</param>
 		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
-		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		/// <remarks>
+		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
+		/// </remarks>
 		public Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int sampleRate, Task recordingTask = null)
 		{
 			return SpeechToTextSimple (audioStream, DefaultChannelCount, sampleRate, DefaultBitsPerSample, recordingTask);
@@ -370,7 +380,9 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <param name="sampleRate">The sample rate of the audio stream.</param>
 		/// <param name="bitsPerSample">The bits per sample of the audio stream.</param>
 		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
-		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		/// <remarks>
+		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
+		/// </remarks>
 		public async Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null)
 		{
 			try
@@ -401,7 +413,9 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </summary>
 		/// <returns>Detailed Speech to Text results, including the N best results for the given speech input.</returns>
 		/// <param name="audioFilePath">Audio file path.</param>
-		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		/// <remarks>
+		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
+		/// </remarks>
 		public async Task<RecognitionResult> SpeechToTextDetailed (string audioFilePath)
 		{
 			try
@@ -434,7 +448,9 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <param name="audioStream">Audio stream containing the speech.</param>
 		/// <param name="sampleRate">The sample rate of the audio stream.</param>
 		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
-		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		/// <remarks>
+		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
+		/// </remarks>
 		public Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, int sampleRate, Task recordingTask = null)
 		{
 			return SpeechToTextDetailed (audioStream, DefaultChannelCount, sampleRate, DefaultBitsPerSample, recordingTask);
@@ -450,7 +466,9 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <param name="sampleRate">The sample rate of the audio stream.</param>
 		/// <param name="bitsPerSample">The bits per sample of the audio stream.</param>
 		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
-		/// <remarks>More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format</remarks>
+		/// <remarks>
+		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
+		/// </remarks>
 		public async Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null)
 		{
 			try
