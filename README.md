@@ -84,10 +84,42 @@ The first thing you'll need to do is construct a new instance of the Bing Speech
 BingSpeechApiClient bingSpeechClient = new BingSpeechApiClient ("<YOUR API KEY>");
 ```
 
+## Authentication
+
+[As noted above](#Setup), you'll need to procure a subscription key in order to authenticate to the Speech service.  There are 2  ways to authenticate, [as described in the service documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/how-to/how-to-authentication?tabs=CSharp):
+
+1. Subscription key  
+  
+    This method passes the subscription key as a header in the service request.  Enable this method by setting the authentication mode as follows:
+    
+    ```c#  
+    speechClient.AuthenticationMode = AuthenticationMode.SubscriptionKey;
+    ```
+
+2. Authorization token  
+  
+    This method makes a call to the authentication endpoint to get a reusable JWT authorization token that lasts for 10 minutes.  If the token expires after 10 minutes, the library will attempt to re-authenticate with the authentication endpoint.
+    
+    This is the default, and recommended, authentication method.
+    
+    This library will authenticate transparently to the endpoint  if it doesn't already have an authentication token cached.  If you'd like to proactively authenticate before making your first speech to text call (to reduce latency of the first call), you may do the following:
+    
+    ```c#
+    speechClient.AuthenticateWithToken (); // pass true to overwrite any existing token
+    ```
+    
+    To clear the current auth token, you can do the following:
+    
+    ```c#
+    speechClient.ClearAuthToken ();
+    ```
+
+## Output Modes
+
 The Bing Speech API has two distinct output modes that yield different results.  More information on each output mode [can be found in the documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format).
 
 
-## Simple Output Mode
+### Simple Output Mode
 
 Simple output mode will return a single result with less detail.
 
@@ -134,7 +166,7 @@ public class RecognitionSpeechResult
 ```
 
 
-## Detailed Output Mode
+### Detailed Output Mode
 
 Detailed output mode will return more detail, and possibly more than one result.
 
