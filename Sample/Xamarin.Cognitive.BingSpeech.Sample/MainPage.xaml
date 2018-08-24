@@ -3,29 +3,14 @@
     <Grid>
         <ScrollView Orientation="Vertical" VerticalOptions="FillAndExpand">
             <StackLayout Padding="20,80,20,0" Orientation="Vertical" Spacing="15">
-                <Label Text="Recognition Mode:" />
-                <Picker x:Name="RecognitionModePicker" Title="Choose Recognition Mode" SelectedIndex="0" SelectedItem="Interactive">
-                    <Picker.Items>
-                        <x:String>Interactive</x:String>
-                        <x:String>Conversation</x:String>
-                        <x:String>Dictation</x:String>
-                    </Picker.Items>
-                </Picker>
-                <Label Text="Output Mode:" />
-                <Picker x:Name="OutputModePicker" Title="Choose Output Mode" SelectedIndex="0" SelectedItem="Simple">
-                    <Picker.Items>
-                        <x:String>Simple</x:String>
-                        <x:String>Detailed</x:String>
-                    </Picker.Items>
-                </Picker>
-                <Label Text="Profanity Mode:" />
-                <Picker x:Name="ProfanityModePicker" Title="Choose Profanity Mode" SelectedIndex="0" SelectedItem="Masked">
-                    <Picker.Items>
-                        <x:String>Masked</x:String>
-                        <x:String>Removed</x:String>
-                        <x:String>Raw</x:String>
-                    </Picker.Items>
-                </Picker>
+                <Picker x:Name="RecognitionModePicker" Title="Choose Recognition Mode" ItemsSource="{Binding RecognitionModes}" SelectedItem="{Binding RecognitionMode}" />
+                <Picker x:Name="OutputModePicker" Title="Choose Output Mode" ItemsSource="{Binding OutputModes}" SelectedItem="{Binding OutputMode}" />
+                <Picker x:Name="ProfanityModePicker" Title="Choose Profanity Mode" ItemsSource="{Binding ProfanityModes}" SelectedItem="{Binding ProfanityMode}" />
+                <Picker x:Name="AuthenticationModePicker" Title="Choose Authentication Mode" ItemsSource="{Binding AuthenticationModes}" SelectedItem="{Binding AuthenticationMode}" SelectedIndexChanged="AuthenticationModePicker_SelectedIndexChanged" />
+                <StackLayout Orientation="Horizontal" x:Name="InitialAuthSection">
+                    <Switch x:Name="AuthSwitch" VerticalOptions="Center" Toggled="AuthSwitch_Toggled" />
+                    <Label Text="Authenticate with token initially"  VerticalOptions="Center" />
+                </StackLayout>
                 <StackLayout Orientation="Horizontal">
                     <Switch x:Name="StreamSwitch" VerticalOptions="Center" />
                     <Label Text="Send audio data while recording"  VerticalOptions="Center" />

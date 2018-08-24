@@ -10,23 +10,33 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 	public partial class MainPage : ContentPage
 	{
 		AudioRecorderService recorder;
-		BingSpeechApiClient bingSpeechClient;
-		OutputMode outputMode;
+		BingSpeechApiClient speechClient;
 
-		public MainPage()
+		public Array AuthenticationModes => Enum.GetValues (typeof (AuthenticationMode));
+
+		public AuthenticationMode AuthenticationMode { get; set; } = AuthenticationMode.AuthorizationToken;
+
+		public Array RecognitionModes => Enum.GetValues (typeof (RecognitionMode));
+
+		public RecognitionMode RecognitionMode { get; set; } = RecognitionMode.Interactive;
+
+		public Array ProfanityModes => Enum.GetValues (typeof (ProfanityMode));
+
+		public ProfanityMode ProfanityMode { get; set; } = ProfanityMode.Masked;
+
+		public Array OutputModes => Enum.GetValues (typeof (OutputMode));
+
+		public OutputMode OutputMode { get; set; } = OutputMode.Simple;
+
+		public MainPage ()
 		{
-			InitializeComponent();
-
-			//setting these in XAML doesn't seem to be working
-			RecognitionModePicker.SelectedIndex = 0;
-			OutputModePicker.SelectedIndex = 0;
-			ProfanityModePicker.SelectedIndex = 0;
+			InitializeComponent ();
 
 			recorder = new AudioRecorderService
 			{
 				StopRecordingOnSilence = true,
 				StopRecordingAfterTimeout = true,
-				TotalAudioTimeout = TimeSpan.FromSeconds (15) //Bing speech REST API has 15 sec max
+				TotalAudioTimeout = TimeSpan.FromSeconds (15) // Speech REST API has 15 sec max
 			};
 
 			if (Keys.BingSpeech.SubscriptionKey == Keys.BingSpeech.BadSubscriptionKey)
@@ -34,11 +44,44 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 				throw new Exception ("Get a Bing Speech API key here: https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-api/");
 			}
 
-			bingSpeechClient = new BingSpeechApiClient (Keys.BingSpeech.SubscriptionKey);
+			speechClient = new BingSpeechApiClient (Keys.BingSpeech.SubscriptionKey);
 
-			//go fetch an auth token up front - this should decrease latecy on the first call. 
-			//	Otherwise, this would be called automatically the first time I use the speech client
-			Task.Run (() => bingSpeechClient.Authenticate ());
+			//	if you need custom endpoint(s) you can do this:
+			//speechClient.SpeechEndpoint = new Endpoint ("westus.stt.speech.microsoft.com", "/speech/recognition");
+			//speechClient.AuthEndpoint = new Endpoint ("westus.api.cognitive.microsoft.com", "/sts/v1.0/issueToken");
+
+			BindingContext = this;
+		}
+
+
+		private void AuthenticationModePicker_SelectedIndexChanged (object sender, EventArgs e)
+		{
+			speechClient.AuthenticationMode = AuthenticationMode;
+
+			if (AuthenticationMode == AuthenticationMode.AuthorizationToken)
+			{
+				InitialAuthSection.IsVisible = true;
+			}
+			else
+			{
+				InitialAuthSection.IsVisible = false;
+				speechClient.ClearAuthToken ();
+			}
+		}
+
+
+		private void AuthSwitch_Toggled (object sender, ToggledEventArgs e)
+		{
+			if (AuthSwitch.IsToggled)
+			{
+				//go fetch an auth token up front - this can/should decrease latecy on the first call. 
+				//	Otherwise, authentication would be performed transparently the first time the speech client is used.
+				Task.Run (() => speechClient.AuthenticateWithToken ());
+			}
+			else
+			{
+				speechClient.ClearAuthToken ();
+			}
 		}
 
 
@@ -82,14 +125,9 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 
 					UpdateUI (true, "Stop");
 
-					//configure the Bing Speech client
-					var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
-					var profanityMode = (ProfanityMode) Enum.Parse (typeof (ProfanityMode), ProfanityModePicker.SelectedItem.ToString ());
-					outputMode = (OutputMode) Enum.Parse (typeof (OutputMode), OutputModePicker.SelectedItem.ToString ());
-
 					//set the selected recognition mode & profanity mode
-					bingSpeechClient.RecognitionMode = recognitionMode;
-					bingSpeechClient.ProfanityMode = profanityMode;
+					speechClient.RecognitionMode = RecognitionMode;
+					speechClient.ProfanityMode = ProfanityMode;
 
 					//if we want to stream the audio as it's recording, we'll do that below
 					if (StreamSwitch.IsToggled)
@@ -150,13 +188,9 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 
 				UpdateUI (true, "Stop");
 
-				var recognitionMode = (RecognitionMode) Enum.Parse (typeof (RecognitionMode), RecognitionModePicker.SelectedItem.ToString ());
-				var profanityMode = (ProfanityMode) Enum.Parse (typeof (ProfanityMode), ProfanityModePicker.SelectedItem.ToString ());
-				outputMode = (OutputMode) Enum.Parse (typeof (OutputMode), OutputModePicker.SelectedItem.ToString ());
-
 				//set the selected recognition mode & profanity mode
-				bingSpeechClient.RecognitionMode = recognitionMode;
-				bingSpeechClient.ProfanityMode = profanityMode;
+				speechClient.RecognitionMode = RecognitionMode;
+				speechClient.ProfanityMode = ProfanityMode;
 
 				if (StreamSwitch.IsToggled)
 				{
@@ -203,14 +237,14 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		{
 			try
 			{
-				switch (outputMode)
+				switch (OutputMode)
 				{
 					case OutputMode.Simple:
-						var simpleResult = await bingSpeechClient.SpeechToTextSimple (audioFile);
+						var simpleResult = await speechClient.SpeechToTextSimple (audioFile);
 
 						return ProcessResult (simpleResult);
 					case OutputMode.Detailed:
-						var detailedResult = await bingSpeechClient.SpeechToTextDetailed (audioFile);
+						var detailedResult = await speechClient.SpeechToTextDetailed (audioFile);
 
 						return ProcessResult (detailedResult);
 				}
@@ -231,14 +265,14 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			{
 				using (var stream = recorder.GetAudioFileStream ())
 				{
-					switch (outputMode)
+					switch (OutputMode)
 					{
 						case OutputMode.Simple:
-							var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.SampleRate, audioRecordTask);
+							var simpleResult = await speechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.SampleRate, audioRecordTask);
 
 							return ProcessResult (simpleResult);
 						case OutputMode.Detailed:
-							var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, recorder.AudioStreamDetails.SampleRate, audioRecordTask);
+							var detailedResult = await speechClient.SpeechToTextDetailed (stream, recorder.AudioStreamDetails.SampleRate, audioRecordTask);
 
 							return ProcessResult (detailedResult);
 					}
