@@ -17,7 +17,7 @@ namespace Xamarin.Cognitive.BingSpeech
 		const int BufferSize = 1024;
 		const int DefaultChannelCount = 1;
 		const int DefaultBitsPerSample = 16;
-
+		readonly string subscriptionKey;
 		bool requestRetried;
 
 		/// <summary>
@@ -28,10 +28,26 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
+		/// Gets or sets the endpoint used to get the authentication token for the Speech API.
+		/// </summary>
+		/// <value>The endpoint.</value>
+		/// <remarks>
+		/// Defaults to <see cref="Endpoints.Authentication"/>. To use a custom auth endpoint, set this to a new <see cref="Endpoint"/> with your endpoint details.
+		/// </remarks>
+		public Endpoint AuthEndpoint { get; set; } = Endpoints.Authentication;
+
+
+		/// <summary>
+		/// Gets and sets the <see cref="AuthenticationMode"/> used by the the speech client.
+		/// </summary>
+		public AuthenticationMode AuthenticationMode { get; set; }
+
+
+		/// <summary>
 		/// Gets or sets the endpoint used to talk to the Speech API.
 		/// </summary>
 		/// <value>The endpoint.</value>
-		/// <remarks>To use a CRIS/Custom Speech Service endpoint, set this to a new <see cref="Endpoint"/> with the details for your CRIS service.</remarks>
+		/// <remarks>Defaults to <see cref="Endpoints.BingSpeechApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to a new <see cref="Endpoint"/> with the details for your CRIS service.</remarks>
 		public Endpoint SpeechEndpoint { get; set; } = Endpoints.BingSpeechApi;
 
 
@@ -82,18 +98,29 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <param name="subscriptionKey">A valid subscription key for the Bing Speech API.</param>
 		public BingSpeechApiClient (string subscriptionKey)
 		{
-			AuthClient = new AuthenticationClient (subscriptionKey);
+			this.subscriptionKey = subscriptionKey;
+
+			AuthClient = new AuthenticationClient (AuthEndpoint, subscriptionKey);
 		}
 
 
 		/// <summary>
-		/// Calls to the authentication endpoint to get a JWT token for authentication to the Bing Speech API.  Token is cached and valid for 9 minutes.
+		/// Calls to the <see cref="AuthEndpoint"/> authentication endpoint to get a JWT token for authentication to the Bing Speech API.  Token is cached and valid for 10 minutes.
 		/// </summary>
 		/// <param name="forceNewToken">If set to <c>true</c>, force new token even if there is already a cached token.</param>
 		/// <remarks>This is called automatically when calling any of the SpeechToText* methods.  Call this separately up front to decrease latency on the initial API call.</remarks>
-		public async Task Authenticate (bool forceNewToken = false)
+		public async Task AuthenticateWithToken (bool forceNewToken = false)
 		{
 			await AuthClient.Authenticate (forceNewToken);
+		}
+
+
+		/// <summary>
+		/// Clears any cached auth token.
+		/// </summary>
+		public void ClearAuthToken ()
+		{
+			AuthClient.ClearToken ();
 		}
 
 
@@ -114,10 +141,19 @@ namespace Xamarin.Cognitive.BingSpeech
 
 				request.Headers.TransferEncodingChunked = true;
 				request.Headers.ExpectContinue = true;
-				request.Headers.Authorization = new AuthenticationHeaderValue (Constants.Keys.Bearer, AuthClient.Token);
 				request.Headers.Accept.ParseAdd (Constants.MimeTypes.Json);
 				request.Headers.Accept.ParseAdd (Constants.MimeTypes.Xml);
 				request.Headers.Host = SpeechEndpoint.Host;
+
+				switch (AuthenticationMode)
+				{
+					case AuthenticationMode.SubscriptionKey:
+						request.Headers.Add (Constants.Keys.SubscriptionKey, subscriptionKey);
+						break;
+					case AuthenticationMode.AuthorizationToken:
+						request.Headers.Authorization = new AuthenticationHeaderValue (Constants.Keys.Bearer, AuthClient.Token);
+						break;
+				}
 
 				return request;
 			}
@@ -333,7 +369,10 @@ namespace Xamarin.Cognitive.BingSpeech
 			{
 				if (!string.IsNullOrEmpty (audioFilePath))
 				{
-					await AuthClient.Authenticate ();
+					if (AuthenticationMode == AuthenticationMode.AuthorizationToken)
+					{
+						await AuthClient.Authenticate ();
+					}
 
 					var response = await SendRequest (
 						() => CreateRequest (OutputMode.Simple),
@@ -387,7 +426,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			try
 			{
-				await AuthClient.Authenticate ();
+				if (AuthenticationMode == AuthenticationMode.AuthorizationToken)
+				{
+					await AuthClient.Authenticate ();
+				}
 
 				var response = await SendRequest (
 					() => CreateRequest (OutputMode.Simple),
@@ -420,7 +462,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			try
 			{
-				await AuthClient.Authenticate ();
+				if (AuthenticationMode == AuthenticationMode.AuthorizationToken)
+				{
+					await AuthClient.Authenticate ();
+				}
 
 				var response = await SendRequest (
 					() => CreateRequest (OutputMode.Detailed),
@@ -473,7 +518,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			try
 			{
-				await AuthClient.Authenticate ();
+				if (AuthenticationMode == AuthenticationMode.AuthorizationToken)
+				{
+					await AuthClient.Authenticate ();
+				}
 
 				var response = await SendRequest (
 					() => CreateRequest (OutputMode.Detailed),

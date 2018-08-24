@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,7 +10,8 @@ namespace Xamarin.Cognitive.BingSpeech
 	/// </summary>
 	class AuthenticationClient
 	{
-		readonly string subscriptionId;
+		readonly string subscriptionKey;
+		readonly Endpoint authEndpoint;
 
 		internal string Token { get; private set; }
 
@@ -18,10 +19,12 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.AuthenticationClient"/> class.
 		/// </summary>
-		/// <param name="subscriptionId">Subscription identifier.</param>
-		public AuthenticationClient (string subscriptionId)
+		/// <param name="authEndpoint">The auth endpoint to get an auth token from.</param>
+		/// <param name="subscriptionKey">Subscription identifier.</param>
+		public AuthenticationClient (Endpoint authEndpoint, string subscriptionKey)
 		{
-			this.subscriptionId = subscriptionId;
+			this.authEndpoint = authEndpoint;
+			this.subscriptionKey = subscriptionKey;
 		}
 
 
@@ -39,18 +42,24 @@ namespace Xamarin.Cognitive.BingSpeech
 		}
 
 
+		public void ClearToken ()
+		{
+			Token = null;
+		}
+
+
 		async Task<string> FetchToken ()
 		{
 			try
 			{
 				using (var client = new HttpClient ())
 				{
-					var uriBuilder = new UriBuilder (Endpoints.Authentication.Protocol,
-													 Endpoints.Authentication.Host,
-													 Endpoints.Authentication.Port,
-													 Endpoints.Authentication.Path);
+					var uriBuilder = new UriBuilder (authEndpoint.Protocol,
+													 authEndpoint.Host,
+													 authEndpoint.Port,
+													 authEndpoint.Path);
 
-					client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, subscriptionId);
+					client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, subscriptionKey);
 
 					Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");
 
