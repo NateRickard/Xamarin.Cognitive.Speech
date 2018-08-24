@@ -86,7 +86,7 @@ BingSpeechApiClient bingSpeechClient = new BingSpeechApiClient ("<YOUR API KEY>"
 
 ## Authentication
 
-[As noted above](#Setup), you'll need to procure a subscription key in order to authenticate to the Speech service.  There are 2  ways to authenticate, [as described in the service documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/how-to/how-to-authentication?tabs=CSharp):
+[As noted above](#setup), you'll need to procure a subscription key in order to authenticate to the Speech service.  There are 2  ways to authenticate, [as described in the service documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/how-to/how-to-authentication?tabs=CSharp):
 
 1. Subscription key  
   
@@ -113,7 +113,7 @@ BingSpeechApiClient bingSpeechClient = new BingSpeechApiClient ("<YOUR API KEY>"
     ```c#
     speechClient.ClearAuthToken ();
     ```
-
+    
 ## Output Modes
 
 The Bing Speech API has two distinct output modes that yield different results.  More information on each output mode [can be found in the documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format).
@@ -286,6 +286,26 @@ using (var stream = recorder.GetAudioFileStream ())
 ```
 
 As the audio recorder plugin stream will be raw PCM data, the sample rate (at a minimum) must be passed in so the proper RIFF header can be sent.
+
+## Endpoints
+
+By default, the library will use the standard STT and authentication endpoints for the Speech service:
+
+Auth: `https://api.cognitive.microsoft.com/sts/v1.0/issueToken`
+STT: `https://speech.platform.bing.com/speech/recognition`
+
+To use a STT endpoint other than the default (for CRIS/Custom Speech Service or if your speech service created a unique endpoint), create a new `Endpoint` with the host, path, and other details:
+
+```c#
+speechClient.SpeechEndpoint = new Endpoint ("westus.stt.speech.microsoft.com", "/speech/recognition");
+```
+
+To change the endpoint the authentication call will be made to (for token auth only), create a new `Endpoint` with the host, path, and other details:
+    
+```c#
+speechClient.AuthEndpoint = new Endpoint ("westus.api.cognitive.microsoft.com", "/sts/v1.0/issueToken");
+```
+
 	
 # Contributing
 
