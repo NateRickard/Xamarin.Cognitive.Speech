@@ -10,11 +10,11 @@ Project("{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}") = "Xamarin.Cognitive.BingSpeec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Cognitive.BingSpeech.Sample", "Sample\Xamarin.Cognitive.BingSpeech.Sample\Xamarin.Cognitive.BingSpeech.Sample.csproj", "{65C2B7B3-A7CA-4581-9C08-D05F5DE61E13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Cognitive.BingSpeech.Sample.Android", "Sample\Xamarin.Cognitive.BingSpeech.Sample.Android\Xamarin.Cognitive.BingSpeech.Sample.Android.csproj", "{9045C574-DC98-421F-B08D-8F473CC3DE03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Cognitive.BingSpeech.Sample.Android", "Sample\Android\Xamarin.Cognitive.BingSpeech.Sample.Android.csproj", "{9045C574-DC98-421F-B08D-8F473CC3DE03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Cognitive.BingSpeech.Sample.iOS", "Sample\Xamarin.Cognitive.BingSpeech.Sample.iOS\Xamarin.Cognitive.BingSpeech.Sample.iOS.csproj", "{DFAF4B6B-E6A4-4D90-8228-1A206D6E6B91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Cognitive.BingSpeech.Sample.iOS", "Sample\iOS\Xamarin.Cognitive.BingSpeech.Sample.iOS.csproj", "{DFAF4B6B-E6A4-4D90-8228-1A206D6E6B91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Cognitive.BingSpeech.Sample.UWP", "Sample\Xamarin.Cognitive.BingSpeech.Sample.UWP\Xamarin.Cognitive.BingSpeech.Sample.UWP.csproj", "{C3BA6D64-60E0-454F-BE6A-ECB610B686E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Cognitive.BingSpeech.Sample.UWP", "Sample\UWP\Xamarin.Cognitive.BingSpeech.Sample.UWP.csproj", "{C3BA6D64-60E0-454F-BE6A-ECB610B686E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
