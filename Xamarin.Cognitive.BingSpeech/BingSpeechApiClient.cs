@@ -429,7 +429,8 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
-		/// Returns Speech to Text results for the given audio input.  Will write a WAV/RIFF header to the output stream with the audio details provided.
+		/// Returns Speech to Text results for the given audio input.  Will write a WAV/RIFF header to the output stream with the audio details provided.  
+		/// If ANY audio details are passed in with a null value, a RIFF header will not be written.
 		/// </summary>
 		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
 		/// <param name="audioStream">Audio stream containing the speech.</param>
@@ -505,7 +506,22 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
-		/// Returns Speech to Text results for the given audio input.  Assumes single channel (mono) audio at 16 bits per sample.
+		/// Returns Speech to Text results for the given audio input.  Assumes the audio stream already contains a WAV file/RIFF header and WILL NOT write one.
+		/// </summary>
+		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
+		/// <param name="audioStream">Audio stream containing the speech.</param>
+		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
+		/// <remarks>
+		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
+		/// </remarks>
+		public Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, Task recordingTask = null)
+		{
+			return SpeechToTextDetailed (audioStream, null, null, null, recordingTask);
+		}
+
+
+		/// <summary>
+		/// Returns Speech to Text results for the given audio input.  Assumes single channel (mono) audio at 16 bits per sample and will write a WAV/RIFF header to the output stream accordingly.
 		/// </summary>
 		/// <returns>Detailed Speech to Text results, including the N best results for the given speech input.</returns>
 		/// <param name="audioStream">Audio stream containing the speech.</param>
@@ -521,18 +537,19 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
-		/// Returns Speech to Text results for the given audio input.
+		/// Returns Speech to Text results for the given audio input.  Will write a WAV/RIFF header to the output stream with the audio details provided. 
+		/// If ANY audio details are passed in with a null value, a RIFF header will not be written.
 		/// </summary>
 		/// <returns>Detailed Speech to Text results, including the N best results for the given speech input.</returns>
 		/// <param name="audioStream">Audio stream containing the speech.</param>
-		/// <param name="channelCount">The number of channels in the audio stream.</param>
 		/// <param name="sampleRate">The sample rate of the audio stream.</param>
+		/// <param name="channelCount">The number of channels in the audio stream.</param>
 		/// <param name="bitsPerSample">The bits per sample of the audio stream.</param>
 		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
 		/// <remarks>
 		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
 		/// </remarks>
-		public async Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null)
+		public async Task<RecognitionResult> SpeechToTextDetailed (Stream audioStream, int? sampleRate, int? channelCount, int? bitsPerSample, Task recordingTask = null)
 		{
 			try
 			{
