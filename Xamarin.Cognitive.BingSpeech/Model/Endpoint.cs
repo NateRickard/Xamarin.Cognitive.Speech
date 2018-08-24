@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.BingSpeech
 {
 	/// <summary>
 	/// Endpoint details.
