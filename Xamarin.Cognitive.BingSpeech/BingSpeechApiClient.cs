@@ -231,7 +231,7 @@ namespace Xamarin.Cognitive.BingSpeech
 						using (var stream = await content.ReadAsStreamAsync ())
 						{
 							//read 1024 (BufferSize) (max) raw bytes from the input audio file
-							buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) stream.Length))];
+							buffer = new byte [checked((uint) Math.Min (BufferSize, (int) stream.Length))];
 
 							while ((bytesRead = await stream.ReadAsync (buffer, 0, buffer.Length)) != 0)
 							{
@@ -264,7 +264,7 @@ namespace Xamarin.Cognitive.BingSpeech
 					using (var audioStream = File.OpenRead (audioFilePath))
 					{
 						//read 1024 (BufferSize) (max) raw bytes from the input audio file
-						buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
+						buffer = new byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
 
 						while ((bytesRead = await audioStream.ReadAsync (buffer, 0, buffer.Length)) != 0)
 						{
@@ -283,7 +283,7 @@ namespace Xamarin.Cognitive.BingSpeech
 		}
 
 
-		HttpContent PopulateRequestContent (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null, int streamReadDelay = 30)
+		HttpContent PopulateRequestContent (Stream audioStream, int? channelCount = null, int? sampleRate = null, int? bitsPerSample = null, Task recordingTask = null, int streamReadDelay = 30)
 		{
 			const int audioDataWaitInterval = 100; //ms
 			const int maxReadRetries = 10; //times
@@ -310,11 +310,14 @@ namespace Xamarin.Cognitive.BingSpeech
 								totalWait += audioDataWaitInterval;
 							}
 
-							//write a wav/riff header to the stream
-							outputStream.WriteWaveHeader (channelCount, sampleRate, bitsPerSample);
+							if (channelCount.HasValue && sampleRate.HasValue && bitsPerSample.HasValue)
+							{
+								//write a wav/riff header to the stream
+								outputStream.WriteWaveHeader (channelCount.Value, sampleRate.Value, bitsPerSample.Value);
+							}
 
 							//read 1024 (BufferSize) (max) raw bytes from the input audio stream
-							buffer = new Byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
+							buffer = new byte [checked((uint) Math.Min (BufferSize, (int) audioStream.Length))];
 
 							//probably a better way to do this... but if the caller has passed a Task in for us to determine the end of recording, we'll use that to see if it's ongoing
 							//	Otherwise, we'll always assume that the Stream is being populated and we'll fall back to using delays to attempt to wait for the end of stream
@@ -395,7 +398,22 @@ namespace Xamarin.Cognitive.BingSpeech
 
 
 		/// <summary>
-		/// Returns Speech to Text results for the given audio input.  Assumes single channel (mono) audio at 16 bits per sample.
+		/// Returns Speech to Text results for the given audio input.  Assumes the audio stream already contains a WAV file/RIFF header and WILL NOT write one.
+		/// </summary>
+		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
+		/// <param name="audioStream">Audio stream containing the speech.</param>
+		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
+		/// <remarks>
+		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
+		/// </remarks>
+		public Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, Task recordingTask = null)
+		{
+			return SpeechToTextSimple (audioStream, null, null, null, recordingTask);
+		}
+
+
+		/// <summary>
+		/// Returns Speech to Text results for the given audio input.  Assumes single channel (mono) audio at 16 bits per sample and will write a WAV/RIFF header to the output stream accordingly.
 		/// </summary>
 		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
 		/// <param name="audioStream">Audio stream containing the speech.</param>
@@ -406,23 +424,23 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </remarks>
 		public Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int sampleRate, Task recordingTask = null)
 		{
-			return SpeechToTextSimple (audioStream, DefaultChannelCount, sampleRate, DefaultBitsPerSample, recordingTask);
+			return SpeechToTextSimple (audioStream, sampleRate, DefaultChannelCount, DefaultBitsPerSample, recordingTask: recordingTask);
 		}
 
 
 		/// <summary>
-		/// Returns Speech to Text results for the given audio input.
+		/// Returns Speech to Text results for the given audio input.  Will write a WAV/RIFF header to the output stream with the audio details provided.
 		/// </summary>
 		/// <returns>Simple Speech to Text results, which is a single result for the given speech input.</returns>
 		/// <param name="audioStream">Audio stream containing the speech.</param>
-		/// <param name="channelCount">The number of channels in the audio stream.</param>
 		/// <param name="sampleRate">The sample rate of the audio stream.</param>
+		/// <param name="channelCount">The number of channels in the audio stream.</param>
 		/// <param name="bitsPerSample">The bits per sample of the audio stream.</param>
 		/// <param name="recordingTask">A <see cref="Task"/> that will complete when recording is complete.</param>
 		/// <remarks>
 		/// More info here: https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format
 		/// </remarks>
-		public async Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int channelCount, int sampleRate, int bitsPerSample, Task recordingTask = null)
+		public async Task<RecognitionSpeechResult> SpeechToTextSimple (Stream audioStream, int? sampleRate, int? channelCount, int? bitsPerSample, Task recordingTask = null)
 		{
 			try
 			{
