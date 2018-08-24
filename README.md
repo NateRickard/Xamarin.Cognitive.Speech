@@ -1,6 +1,6 @@
 # Xamarin.Cognitive.BingSpeech ![NuGet](https://img.shields.io/nuget/v/Xamarin.Cognitive.BingSpeech.svg?label=NuGet)
 
-`Xamarin.Cognitive.BingSpeech` is a managed client library that makes it easy to work with the [Microsoft Cognitive Services Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/) on Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, and other .NET Standard 2.0 projects.
+`Xamarin.Cognitive.BingSpeech` is a managed client library that makes it easy to work with the [Microsoft Cognitive Services Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/) on Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, and other .NET Standard 2.0+ projects.
 
 Includes a Xamarin.Forms sample with iOS, Android, and UWP apps.
 
@@ -19,7 +19,7 @@ Why use this client library to talk to the Bing Speech API and not [insert other
 	- Use an older version of the Bing Speech API.
 	- Use the older `HttpWebRequest` network APIs.
 	- Contain very little in the way of feature support.
-	- Are not mobile specific or don't contain mobile examples/value-adds
+	- Are not mobile-specific or don't contain mobile examples/value-adds
 
 I wanted to create something specific to mobile, that was updated, easy to use, and included some niceties specific to the mobile world.
 
@@ -40,6 +40,7 @@ I wanted to create something specific to mobile, that was updated, easy to use, 
     	- Removed
     	- Raw
 	- Recognition language support
+	- Multiple authentication modes
 - Ability to stream audio to the server as it's being recorded
 - Easy to use API
 - Works seamlessly with [Plugin.AudioRecorder](https://www.nuget.org/packages/Plugin.AudioRecorder/), a cross platform way to record device microphone input
@@ -47,7 +48,7 @@ I wanted to create something specific to mobile, that was updated, easy to use, 
 
 # Setup
 
-`Xamarin.Cognitive.BingSpeech` is available as a [NuGet package](https://www.nuget.org/packages/Xamarin.Cognitive.BingSpeech/) to be added to your Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, or other .NET Standard 2.0 project(s).
+`Xamarin.Cognitive.BingSpeech` is available as a [NuGet package](https://www.nuget.org/packages/Xamarin.Cognitive.BingSpeech/) to be added to your Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, or other .NET Standard 2.0+ project(s).
 
 You must have a valid Bing Speech API subscription key.  You can get a free trial key or create a permanent key in the [Bing Speech API portal](https://azure.microsoft.com/en-us/services/cognitive-services/speech/).
 
@@ -59,7 +60,7 @@ var bingSpeechClient = new BingSpeechApiClient ("<YOUR KEY>");
 
 Read more details on [how to use the client below](https://github.com/NateRickard/Xamarin.Cognitive.BingSpeech#usage).
 
-To run the sample(s), update the `keys.cs` file so the `SubscriptionKey` property is set to your API key:
+To run the sample(s), update the `Keys.cs` file so the `SubscriptionKey` property is set to your API key:
 
 ```C#
 public const string SubscriptionKey = "My Key Goes Here";
@@ -108,6 +109,7 @@ public class RecognitionSpeechResult
 	/// A string indicating the result status.  Successful requests will return "Success"
 	/// </summary>
 	public RecognitionStatus RecognitionStatus { get; set; }
+	
 
 	/// <summary>
 	/// Gets or sets the offset.  
@@ -192,6 +194,7 @@ public class SpeechResult
 	/// Confidence scores range from 0 to 1. A score of 1 represents the highest level of confidence. A score of 0 represents the lowest level of confidence.
 	/// </summary>
 	public float Confidence { get; set; }
+	
 
 	/// <summary>
 	/// The lexical form is the recognized text, exactly how it occurred in the utterance and without punctuation or capitalization.
@@ -223,19 +226,21 @@ public class SpeechResult
 
 It's also possible to send audio to the server from a `Stream`.  The most common use of this would be to start sending audio data to the Bing Speech API as it's still being recorded.
 
-In addition to the audio `Stream`, you also need to provide the sample rate, and, optionally, a `Task` object that will indicate when the audio stream has finished recording.  If the `Task` is omitted, the client library will attempt to make additional reads from the stream until no further audio data is detected; however, this is not recommended.
+In addition to the audio `Stream`, you can also provide an optional `Task` object that will indicate when the audio stream has finished recording.  If the `Task` is omitted, the client library will attempt to make additional reads from the stream until no further audio data is detected; however, this is not recommended.
 
 ```C#
 // simple output mode
 
-var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, <sample rate>, <audio record Task>);
+var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, <audio record Task>);
 
 // ... or detailed output mode
 
-var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, <sample rate>, <audio record Task>);
+var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, <audio record Task>);
 ```
 
-Since this library was developed with my [audio recorder plugin](https://github.com/NateRickard/Plugin.AudioRecorder) in mind, this has been made quite simple:
+**NOTE** If you're streaming raw PCM audio data, a WAV/RIFF header needs to be written to the beginning of your audio data (this is a requirement of the Speech API).  This library is able to write the header to the outgoing network stream prior to sending the audio data; however, you MUST use one of the `SpeechToTextSimple` or `SpeechToTextDetailed` overloads that takes those audio details.
+
+Since this library was developed with my [audio recorder plugin](https://github.com/NateRickard/Plugin.AudioRecorder) in mind, proper streaming has been made quite simple:
 
 ```C#
 // start recording audio
@@ -248,6 +253,7 @@ using (var stream = recorder.GetAudioFileStream ())
 }
 ```
 
+As the audio recorder plugin stream will be raw PCM data, the sample rate (at a minimum) must be passed in so the proper RIFF header can be sent.
 	
 # Contributing
 
