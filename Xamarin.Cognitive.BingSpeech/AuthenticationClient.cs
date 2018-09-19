@@ -67,6 +67,8 @@ namespace Xamarin.Cognitive.BingSpeech
 
 					if (result.IsSuccessStatusCode)
 					{
+						Debug.WriteLine ("New authentication token retrieved at {0}", DateTime.Now);
+
 						return await result.Content.ReadAsStringAsync ();
 					}
 
