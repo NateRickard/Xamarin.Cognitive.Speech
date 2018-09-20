@@ -254,7 +254,8 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			catch (Exception ex)
 			{
 				Debug.WriteLine (ex);
-				throw;
+
+				return ProcessResult (ex);
 			}
 		}
 
@@ -283,7 +284,8 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			catch (Exception ex)
 			{
 				Debug.WriteLine (ex);
-				throw;
+
+				return ProcessResult (ex);
 			}
 		}
 
@@ -324,6 +326,22 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 					$"Display: {speechResult.Display}\r\n" +
 					$"ITN: {speechResult.ITN}\r\n" +
 					$"Masked ITN: {speechResult.MaskedITN}";
+			}
+
+			Debug.WriteLine (resultText);
+
+			return resultText;
+		}
+
+
+		string ProcessResult (Exception ex)
+		{
+			string resultText = null;
+
+			if (ex != null)
+			{
+				resultText = $"Error occurred: {ex.Message}\r\n" +
+					$"Stack trace: {ex.StackTrace}";
 			}
 
 			Debug.WriteLine (resultText);
