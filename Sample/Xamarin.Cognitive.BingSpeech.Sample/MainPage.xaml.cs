@@ -313,20 +313,24 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		{
 			string resultText = null;
 
-			if (recognitionResult != null && recognitionResult.Results.Any ())
+			if (recognitionResult != null)
 			{
 				resultText = $"Recognition Status: {recognitionResult.RecognitionStatus}\r\n" +
 					$"Offset: {recognitionResult.Offset}\r\n" +
 					$"Duration: {recognitionResult.Duration}\r\n";
 
-				var speechResult = recognitionResult.Results.First ();
+				if (recognitionResult.RecognitionStatus == RecognitionStatus.Success &&
+					recognitionResult.Results.Any ())
+				{
+					var speechResult = recognitionResult.Results.First ();
 
-				resultText += $"--::First Result::--\r\n" +
-					$"Confidence: {speechResult.Confidence}\r\n" +
-					$"Lexical: {speechResult.Lexical}\r\n" +
-					$"Display: {speechResult.Display}\r\n" +
-					$"ITN: {speechResult.ITN}\r\n" +
-					$"Masked ITN: {speechResult.MaskedITN}";
+					resultText += $"--::First Result::--\r\n" +
+						$"Confidence: {speechResult.Confidence}\r\n" +
+						$"Lexical: {speechResult.Lexical}\r\n" +
+						$"Display: {speechResult.Display}\r\n" +
+						$"ITN: {speechResult.ITN}\r\n" +
+						$"Masked ITN: {speechResult.MaskedITN}";
+				}
 			}
 
 			Debug.WriteLine (resultText);
