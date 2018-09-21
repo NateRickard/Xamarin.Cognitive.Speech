@@ -12,6 +12,7 @@ namespace Xamarin.Cognitive.BingSpeech
 	{
 		readonly string subscriptionKey;
 		readonly Endpoint authEndpoint;
+		readonly HttpClient client;
 
 		internal string Token { get; private set; }
 
@@ -25,6 +26,9 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			this.authEndpoint = authEndpoint;
 			this.subscriptionKey = subscriptionKey;
+
+			client = new HttpClient ();
+			client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, subscriptionKey);
 		}
 
 
@@ -52,28 +56,23 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			try
 			{
-				using (var client = new HttpClient ())
+				var uriBuilder = new UriBuilder (authEndpoint.Protocol,
+												 authEndpoint.Host,
+												 authEndpoint.Port,
+												 authEndpoint.Path);
+
+				Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");
+
+				var result = await client.PostAsync (uriBuilder.Uri, null);
+
+				if (result.IsSuccessStatusCode)
 				{
-					var uriBuilder = new UriBuilder (authEndpoint.Protocol,
-													 authEndpoint.Host,
-													 authEndpoint.Port,
-													 authEndpoint.Path);
+					Debug.WriteLine ("New authentication token retrieved at {0}", DateTime.Now);
 
-					client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, subscriptionKey);
-
-					Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");
-
-					var result = await client.PostAsync (uriBuilder.Uri, null);
-
-					if (result.IsSuccessStatusCode)
-					{
-						Debug.WriteLine ("New authentication token retrieved at {0}", DateTime.Now);
-
-						return await result.Content.ReadAsStringAsync ();
-					}
-
-					throw new Exception ($"Unable to authenticate, auth endpoint returned: status code {result.StatusCode} ; Reason: {result.ReasonPhrase}");
+					return await result.Content.ReadAsStringAsync ();
 				}
+
+				throw new Exception ($"Unable to authenticate, auth endpoint returned: status code {result.StatusCode} ; Reason: {result.ReasonPhrase}");
 			}
 			catch (Exception ex)
 			{
