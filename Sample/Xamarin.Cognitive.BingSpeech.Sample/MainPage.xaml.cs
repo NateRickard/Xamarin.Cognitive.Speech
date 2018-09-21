@@ -167,8 +167,9 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			}
 			catch (Exception ex)
 			{
-				//blow up the app!
-				throw ex;
+				ResultsLabel.Text = ProcessResult (ex);
+
+				UpdateUI (true, "Record", false);
 			}
 		}
 
