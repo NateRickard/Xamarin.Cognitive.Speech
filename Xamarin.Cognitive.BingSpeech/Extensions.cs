@@ -62,7 +62,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			}
 		}
 
-
 		/// <summary>
 		/// Checks if the Exception is a <see cref="WebException"/> and if so, evaluates if the StatusCode is equal to the given status code.
 		/// </summary>

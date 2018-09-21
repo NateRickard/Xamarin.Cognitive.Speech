@@ -16,7 +16,6 @@ namespace Xamarin.Cognitive.BingSpeech
 
 		internal string Token { get; private set; }
 
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.AuthenticationClient"/> class.
 		/// </summary>
@@ -31,7 +30,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, subscriptionKey);
 		}
 
-
 		/// <summary>
 		/// Calls to the authentication endpoint to get a JWT token that is cached.
 		/// </summary>
@@ -45,12 +43,10 @@ namespace Xamarin.Cognitive.BingSpeech
 			}
 		}
 
-
 		public void ClearToken ()
 		{
 			Token = null;
 		}
-
 
 		async Task<string> FetchToken ()
 		{

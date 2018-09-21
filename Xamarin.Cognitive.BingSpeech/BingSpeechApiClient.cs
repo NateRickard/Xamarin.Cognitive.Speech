@@ -17,6 +17,7 @@ namespace Xamarin.Cognitive.BingSpeech
 		const int ChunkSize = 1024;
 		const int DefaultChannelCount = 1;
 		const int DefaultBitsPerSample = 16;
+
 		readonly string subscriptionKey;
 		readonly HttpClient client;
 
@@ -28,7 +29,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <value>The auth client.</value>
 		AuthenticationClient AuthClient { get; set; }
 
-
 		/// <summary>
 		/// Gets or sets the endpoint used to get the authentication token for the Speech API.
 		/// </summary>
@@ -38,12 +38,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </remarks>
 		public Endpoint AuthEndpoint { get; set; } = Endpoints.Authentication;
 
-
 		/// <summary>
 		/// Gets and sets the <see cref="AuthenticationMode"/> used by the the speech client.
 		/// </summary>
 		public AuthenticationMode AuthenticationMode { get; set; }
-
 
 		/// <summary>
 		/// Gets or sets the endpoint used to talk to the Speech API.
@@ -51,7 +49,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// <value>The endpoint.</value>
 		/// <remarks>Defaults to <see cref="Endpoints.BingSpeechApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to a new <see cref="Endpoint"/> with the details for your CRIS service.</remarks>
 		public Endpoint SpeechEndpoint { get; set; } = Endpoints.BingSpeechApi;
-
 
 		/// <summary>
 		/// Gets or sets the Recognition language.
@@ -61,7 +58,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#recognition-language
 		/// </remarks>
 		public string RecognitionLanguage { get; set; } = "en-US";
-
 
 		/// <summary>
 		/// Gets or sets the recognition mode.
@@ -75,7 +71,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </remarks>
 		public RecognitionMode RecognitionMode { get; set; }
 
-
 		/// <summary>
 		/// Gets or sets the profanity mode.
 		/// </summary>
@@ -86,13 +81,11 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </remarks>
 		public ProfanityMode ProfanityMode { get; set; }
 
-
 		/// <summary>
 		/// Gets or sets the API version.
 		/// </summary>
 		/// <value>The API version. Defaults to "v1"</value>
 		public string ApiVersion { get; set; } = "v1";
-
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.BingSpeechApiClient"/> class.
@@ -106,7 +99,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			AuthClient = new AuthenticationClient (AuthEndpoint, subscriptionKey);
 		}
 
-
 		/// <summary>
 		/// Calls to the <see cref="AuthEndpoint"/> authentication endpoint to get a JWT token for authentication to the Bing Speech API.  Token is cached and valid for 10 minutes.
 		/// </summary>
@@ -117,7 +109,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			await AuthClient.Authenticate (forceNewToken);
 		}
 
-
 		/// <summary>
 		/// Clears any cached auth token.
 		/// </summary>
@@ -125,7 +116,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			AuthClient.ClearToken ();
 		}
-
 
 		HttpRequestMessage CreateRequest (OutputMode outputMode)
 		{
@@ -169,7 +159,6 @@ namespace Xamarin.Cognitive.BingSpeech
 				throw;
 			}
 		}
-
 
 		async Task<string> SendRequest (Func<HttpRequestMessage> requestFactory, Func<HttpContent> contentFactory)
 		{
@@ -219,7 +208,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			throw new Exception ("SendRequest: Unable to send successful request - unknown error or null response received");
 		}
 
-
 		HttpContent CopyRequestContent (HttpContent content)
 		{
 			return new PushStreamContent (async (outputStream, httpContext, transportContext) =>
@@ -257,7 +245,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			}, new MediaTypeHeaderValue (Constants.MimeTypes.WavAudio));
 		}
 
-
 		HttpContent PopulateRequestContent (string audioFilePath)
 		{
 			return new PushStreamContent (async (outputStream, httpContext, transportContext) =>
@@ -288,7 +275,6 @@ namespace Xamarin.Cognitive.BingSpeech
 				}
 			}, new MediaTypeHeaderValue (Constants.MimeTypes.WavAudio));
 		}
-
 
 		HttpContent PopulateRequestContent (Stream audioStream, int? channelCount = null, int? sampleRate = null, int? bitsPerSample = null, Task recordingTask = null, int streamReadDelay = 30)
 		{
@@ -366,7 +352,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			}, new MediaTypeHeaderValue (Constants.MimeTypes.WavAudio));
 		}
 
-
 		/// <summary>
 		/// Returns Speech to Text results for the given audio input.  Begins sending the audio stream to the server immediately.
 		/// </summary>
@@ -407,7 +392,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			}
 		}
 
-
 		/// <summary>
 		/// Returns Speech to Text results for the given audio input.  Assumes the audio stream already contains a WAV file/RIFF header and WILL NOT write one.
 		/// </summary>
@@ -421,7 +405,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			return SpeechToTextSimple (audioStream, null, null, null, recordingTask);
 		}
-
 
 		/// <summary>
 		/// Returns Speech to Text results for the given audio input.  Assumes single channel (mono) audio at 16 bits per sample and will write a WAV/RIFF header to the output stream accordingly.
@@ -437,7 +420,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			return SpeechToTextSimple (audioStream, sampleRate, DefaultChannelCount, DefaultBitsPerSample, recordingTask: recordingTask);
 		}
-
 
 		/// <summary>
 		/// Returns Speech to Text results for the given audio input.  Will write a WAV/RIFF header to the output stream with the audio details provided.  
@@ -479,7 +461,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			}
 		}
 
-
 		/// <summary>
 		/// Returns Speech to Text results for the given audio input.
 		/// </summary>
@@ -515,7 +496,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			}
 		}
 
-
 		/// <summary>
 		/// Returns Speech to Text results for the given audio input.  Assumes the audio stream already contains a WAV file/RIFF header and WILL NOT write one.
 		/// </summary>
@@ -529,7 +509,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			return SpeechToTextDetailed (audioStream, null, null, null, recordingTask);
 		}
-
 
 		/// <summary>
 		/// Returns Speech to Text results for the given audio input.  Assumes single channel (mono) audio at 16 bits per sample and will write a WAV/RIFF header to the output stream accordingly.
@@ -545,7 +524,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			return SpeechToTextDetailed (audioStream, sampleRate, DefaultChannelCount, DefaultBitsPerSample, recordingTask);
 		}
-
 
 		/// <summary>
 		/// Returns Speech to Text results for the given audio input.  Will write a WAV/RIFF header to the output stream with the audio details provided. 

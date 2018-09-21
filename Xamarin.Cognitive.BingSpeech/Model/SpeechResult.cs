@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.BingSpeech
 {
 	/// <summary>
 	/// A Speech result that is part of a detailed resultset.
@@ -15,19 +15,16 @@
 		/// </summary>
 		public string Lexical { get; set; }
 
-
 		/// <summary>
 		/// The ITN form of a recognition result does not include capitalization or punctuation. 
 		/// The ITN form is most appropriate for applications that act on the recognized text.
 		/// </summary>
 		public string ITN { get; set; }
 
-
 		/// <summary>
 		/// The masked ITN form applies profanity masking to the inverse text normalization form.
 		/// </summary>
 		public string MaskedITN { get; set; }
-
 
 		/// <summary>
 		/// The display form adds punctuation and capitalization to recognition results, making it the most appropriate form for applications that display the spoken text.

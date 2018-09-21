@@ -10,24 +10,20 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </summary>
 		public string Protocol { get; private set; } = "https";
 
-
 		/// <summary>
 		/// Gets the host.
 		/// </summary>
 		public string Host { get; private set; }
-
 
 		/// <summary>
 		/// Gets the port.
 		/// </summary>
 		public int Port { get; private set; } = 443;
 
-
 		/// <summary>
 		/// Gets the path.
 		/// </summary>
 		public string Path { get; private set; }
-
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.Endpoint"/> class.
@@ -44,7 +40,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			Path = path;
 		}
 
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.Endpoint"/> class. 
 		/// Assumes Https protocol.
@@ -58,7 +53,6 @@ namespace Xamarin.Cognitive.BingSpeech
 			Port = port;
 			Path = path;
 		}
-
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.Endpoint"/> class. 

@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.BingSpeech
 {
 	/// <summary>
 	/// A single speech result combining Recogniton result with Speech result.  This is used for Simple result mode.
@@ -16,13 +16,11 @@
 		/// </summary>
 		public long Offset { get; set; }
 
-
 		/// <summary>
 		/// The duration of speech.  
 		/// The Duration element specifies the duration (in 100-nanosecond units) of this speech phrase.
 		/// </summary>
 		public long Duration { get; set; }
-
 
 		/// <summary>
 		/// The top result (by confidence), returned in Display Form.
