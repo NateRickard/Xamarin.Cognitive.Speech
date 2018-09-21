@@ -14,7 +14,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Xamarin.Cognitive.BingSpeech</PackageId>
-    <PackageVersion Condition="'$(PackageVersion)' == ''">2.1.1</PackageVersion>
+    <PackageVersion Condition="'$(PackageVersion)' == ''">2.1.2</PackageVersion>
     <Title>Xamarin client for the Bing Speech API</Title>
     <Authors>Nate Rickard</Authors>
     <Owners>Nate Rickard</Owners>
