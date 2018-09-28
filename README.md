@@ -73,6 +73,14 @@ All app platforms should have 'Internet' or similar permissions in order to comm
 
 **Note:** if you're using the [Audio Recorder Plugin](https://www.nuget.org/packages/Plugin.AudioRecorder/) (or likely any other method of recording audio) to send audio to the Bing Speech API, you'll want to review the [platform-specific permissions required for each platform](https://github.com/NateRickard/Plugin.AudioRecorder#required-permissions--capabilities) there for accessing the microphone and recording audio.
 
+### iOS
+
+With the latest speech api we've seen the need to change your iOS build config(s) to [use the NSUrlSession HttpClient implementation](https://docs.microsoft.com/en-us/xamarin/ios/app-fundamentals/ats#setting-the-httpclient-implementation).  If you're experiencing "Service Unavailable" errors on iOS, this is likely what you need to do to resolve the issue.  This must be done for all build configs being used (i.e. iPhoneSimulator **and** iPhone).
+
+### Android
+
+With the latest speech api we've seen the need to change your Android project to [use the Android HttpClient implementation](https://docs.microsoft.com/en-us/xamarin/android/app-fundamentals/http-stack?tabs=windows).  If you're experiencing "Service Unavailable" errors on Android, this is likely what you need to do to resolve the issue.  This must be done for all build configs being used.
+
 
 # Usage
 
