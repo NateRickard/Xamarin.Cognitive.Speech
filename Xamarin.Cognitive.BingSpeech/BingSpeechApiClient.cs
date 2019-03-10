@@ -91,9 +91,22 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.BingSpeechApiClient"/> class.
 		/// </summary>
 		/// <param name="subscriptionKey">A valid subscription key for the Bing Speech API.</param>
-		public BingSpeechApiClient (string subscriptionKey)
+		public BingSpeechApiClient (string subscriptionKey) : this(subscriptionKey, AuthEndpoint)
+		{
+			
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.BingSpeechApiClient"/> class.
+		/// </summary>
+		/// <param name="subscriptionKey">A valid subscription key for the Bing Speech API.</param>
+		/// <param name="authEndpoint">Authentication endpoint.</param>
+		public BingSpeechApiClient(string subscriptionKey, Endpoint authEndpoint = null, Endpoint speechEndpoint = null)
 		{
 			this.subscriptionKey = subscriptionKey;
+			this.AuthEndpoint = authEndpoint ?? this.AuthEndpoint;
+			this.SpeechEndpoint = speechEndpoint ?? this.SpeechEndpoint;
+
 			client = new HttpClient ();
 
 			AuthClient = new AuthenticationClient (AuthEndpoint, subscriptionKey);
