@@ -22,6 +22,8 @@ namespace Xamarin.Cognitive.BingSpeech
 		readonly HttpClient client;
 
 		bool requestRetried;
+		private Endpoint authEndpoint;
+		private Endpoint speechEndpoint;
 
 		/// <summary>
 		/// Gets the auth client.
@@ -30,25 +32,9 @@ namespace Xamarin.Cognitive.BingSpeech
 		AuthenticationClient AuthClient { get; set; }
 
 		/// <summary>
-		/// Gets or sets the endpoint used to get the authentication token for the Speech API.
-		/// </summary>
-		/// <value>The endpoint.</value>
-		/// <remarks>
-		/// Defaults to <see cref="Endpoints.Authentication"/>. To use a custom auth endpoint, set this to a new <see cref="Endpoint"/> with your endpoint details.
-		/// </remarks>
-		public Endpoint AuthEndpoint { get; set; } = Endpoints.Authentication;
-
-		/// <summary>
 		/// Gets and sets the <see cref="AuthenticationMode"/> used by the the speech client.
 		/// </summary>
 		public AuthenticationMode AuthenticationMode { get; set; }
-
-		/// <summary>
-		/// Gets or sets the endpoint used to talk to the Speech API.
-		/// </summary>
-		/// <value>The endpoint.</value>
-		/// <remarks>Defaults to <see cref="Endpoints.BingSpeechApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to a new <see cref="Endpoint"/> with the details for your CRIS service.</remarks>
-		public Endpoint SpeechEndpoint { get; set; } = Endpoints.BingSpeechApi;
 
 		/// <summary>
 		/// Gets or sets the Recognition language.
@@ -91,12 +77,16 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.BingSpeechApiClient"/> class.
 		/// </summary>
 		/// <param name="subscriptionKey">A valid subscription key for the Bing Speech API.</param>
-		public BingSpeechApiClient (string subscriptionKey)
+		/// <param name="authEndpoint">The endpoint used to get the authentication token for the Speech API. Defaults to <see cref="Endpoints.Authentication"/>. To use a custom auth endpoint, set this to an <see cref="Endpoint"/> with your endpoint details.</param>
+		/// <param name="speechEndpoint">The endpoint used to talk to the Speech API. Defaults to <see cref="Endpoints.BingSpeechApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to an <see cref="Endpoint"/> with the details for your CRIS service.</param>
+		public BingSpeechApiClient (string subscriptionKey, Endpoint authEndpoint = null, Endpoint speechEndpoint = null)
 		{
 			this.subscriptionKey = subscriptionKey;
+			this.authEndpoint = authEndpoint ?? Endpoints.Authentication;
+			this.speechEndpoint = speechEndpoint ?? Endpoints.BingSpeechApi;
 			client = new HttpClient ();
 
-			AuthClient = new AuthenticationClient (AuthEndpoint, subscriptionKey);
+			AuthClient = new AuthenticationClient (authEndpoint, subscriptionKey);
 		}
 
 		/// <summary>
@@ -121,10 +111,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			try
 			{
-				var uriBuilder = new UriBuilder (SpeechEndpoint.Protocol,
-												 SpeechEndpoint.Host,
-												 SpeechEndpoint.Port,
-												 SpeechEndpoint.Path);
+				var uriBuilder = new UriBuilder (speechEndpoint.Protocol,
+												 speechEndpoint.Host,
+												 speechEndpoint.Port,
+												 speechEndpoint.Path);
 				uriBuilder.Path += $"/{RecognitionMode.ToString ().ToLower ()}/cognitiveservices/{ApiVersion}";
 				uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}&profanity={ProfanityMode.ToString ().ToLower ()}";
 
@@ -139,7 +129,7 @@ namespace Xamarin.Cognitive.BingSpeech
 				request.Headers.ExpectContinue = true;
 				request.Headers.Accept.ParseAdd (Constants.MimeTypes.Json);
 				request.Headers.Accept.ParseAdd (Constants.MimeTypes.Xml);
-				request.Headers.Host = SpeechEndpoint.Host;
+				request.Headers.Host = speechEndpoint.Host;
 
 				switch (AuthenticationMode)
 				{
