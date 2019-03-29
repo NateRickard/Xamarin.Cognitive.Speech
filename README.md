@@ -302,18 +302,13 @@ By default, the library will use the standard STT and authentication endpoints f
 Auth: `https://api.cognitive.microsoft.com/sts/v1.0/issueToken`
 STT: `https://speech.platform.bing.com/speech/recognition`
 
-To use a STT endpoint other than the default (for CRIS/Custom Speech Service or if your speech service created a unique endpoint), create a new `Endpoint` with the host, path, and other details:
+To use a STT (or authentication, for token auth only) endpoint other than the default (for CRIS/Custom Speech Service or if your speech service created a unique endpoint), create a new `Endpoint` with the host, path, and other details, and pass this into the constructor:
 
 ```c#
-speechClient.SpeechEndpoint = new Endpoint ("westus.stt.speech.microsoft.com", "/speech/recognition");
+var bingSpeechClient = new BingSpeechApiClient ("<YOUR KEY>",
+    new Endpoint ("westus.api.cognitive.microsoft.com", "/sts/v1.0/issueToken") //auth endpoint
+    new Endpoint ("westus.stt.speech.microsoft.com", "/speech/recognition")); //STT endpoint
 ```
-
-To change the endpoint the authentication call will be made to (for token auth only), create a new `Endpoint` with the host, path, and other details:
-    
-```c#
-speechClient.AuthEndpoint = new Endpoint ("westus.api.cognitive.microsoft.com", "/sts/v1.0/issueToken");
-```
-
 	
 # Contributing
 
