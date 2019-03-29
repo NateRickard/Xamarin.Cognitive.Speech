@@ -20,10 +20,10 @@ namespace Xamarin.Cognitive.BingSpeech
 
 		readonly string subscriptionKey;
 		readonly HttpClient client;
+		readonly Endpoint authEndpoint;
+		readonly Endpoint speechEndpoint;
 
 		bool requestRetried;
-		private Endpoint authEndpoint;
-		private Endpoint speechEndpoint;
 
 		/// <summary>
 		/// Gets the auth client.
