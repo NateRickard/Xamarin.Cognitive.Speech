@@ -41,9 +41,21 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </summary>
 		/// <remarks>
 		/// Supported locales can be found here: 
-		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#recognition-language
+		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support#speech-to-text
 		/// </remarks>
 		public string RecognitionLanguage { get; set; } = "en-US";
+
+
+		/// <summary>
+		/// Gets or sets the speech region 
+		/// </summary>
+		/// <value>The Speech Region</value>
+		/// <remarks>
+		/// There are eighteen speech regions
+		/// Choose the appropriate region based on your azure configuration
+		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/rest-speech-to-text#regions-and-endpoints
+		/// </remarks>
+		public SpeechRegion SpeechRegion { get; set; }
 
 		/// <summary>
 		/// Gets or sets the recognition mode.
@@ -53,7 +65,7 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// There are three modes of recognition: interactive, conversation, and dictation. 
 		/// The recognition mode adjusts speech recognition based on how the users are likely to speak. 
 		/// Choose the appropriate recognition mode for your application.
-		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#recognition-modes
+		/// NOTE: Current documentation for 'Regions and Endpoints' only show the 'conversation' mode in the example Uris
 		/// </remarks>
 		public RecognitionMode RecognitionMode { get; set; }
 
@@ -77,16 +89,17 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.BingSpeechApiClient"/> class.
 		/// </summary>
 		/// <param name="subscriptionKey">A valid subscription key for the Bing Speech API.</param>
-		/// <param name="authEndpoint">The endpoint used to get the authentication token for the Speech API. Defaults to <see cref="Endpoints.Authentication"/>. To use a custom auth endpoint, set this to an <see cref="Endpoint"/> with your endpoint details.</param>
-		/// <param name="speechEndpoint">The endpoint used to talk to the Speech API. Defaults to <see cref="Endpoints.BingSpeechApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to an <see cref="Endpoint"/> with the details for your CRIS service.</param>
-		public BingSpeechApiClient (string subscriptionKey, Endpoint authEndpoint = null, Endpoint speechEndpoint = null)
+		/// <param name="authEndpoint">The endpoint used to get the authentication token for the Speech API. Defaults to <see cref="Endpoint.Authentication"/>. To use a custom auth endpoint, set this to an <see cref="Endpoint"/> with your endpoint details.</param>
+		/// <param name="speechEndpoint">The endpoint used to talk to the Speech API. Defaults to <see cref="Endpoint.BingSpeechApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to an <see cref="Endpoint"/> with the details for your CRIS service.</param>
+		public BingSpeechApiClient (string subscriptionKey,SpeechRegion speechRegion, Endpoint authEndpoint = null, Endpoint speechEndpoint = null)
 		{
 			this.subscriptionKey = subscriptionKey;
 			this.authEndpoint = authEndpoint ?? Endpoints.Authentication;
-			this.speechEndpoint = speechEndpoint ?? Endpoints.BingSpeechApi;
+			this.speechEndpoint = speechEndpoint ?? Endpoints.SpeechServiceApi;
+			this.SpeechRegion = speechRegion;
 			client = new HttpClient ();
 
-			AuthClient = new AuthenticationClient (authEndpoint, subscriptionKey);
+			AuthClient = new AuthenticationClient (this.authEndpoint, this.subscriptionKey, this.SpeechRegion);
 		}
 
 		/// <summary>
@@ -112,10 +125,11 @@ namespace Xamarin.Cognitive.BingSpeech
 			try
 			{
 				var uriBuilder = new UriBuilder (speechEndpoint.Protocol,
-												 speechEndpoint.Host,
+												 $"{SpeechRegion.ToString().ToLower()}.{speechEndpoint.Host}",
 												 speechEndpoint.Port,
 												 speechEndpoint.Path);
-				uriBuilder.Path += $"/{RecognitionMode.ToString ().ToLower ()}/cognitiveservices/{ApiVersion}";
+
+				uriBuilder.Path += $"/{RecognitionMode.ToString().ToLower()}/cognitiveservices/{ApiVersion}";
 				uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}&profanity={ProfanityMode.ToString ().ToLower ()}";
 
 				Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");

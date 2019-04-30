@@ -12,6 +12,10 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		AudioRecorderService recorder;
 		BingSpeechApiClient speechClient;
 
+		public Array SpeechRegions => Enum.GetValues(typeof(SpeechRegion));
+
+		public SpeechRegion SpeechRegion { get; set; } = SpeechRegion.EastUS;
+
 		public Array AuthenticationModes => Enum.GetValues (typeof (AuthenticationMode));
 
 		public AuthenticationMode AuthenticationMode { get; set; } = AuthenticationMode.AuthorizationToken;
@@ -44,7 +48,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 				throw new Exception ("Get a Bing Speech API key here: https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-api/");
 			}
 
-			speechClient = new BingSpeechApiClient (Keys.BingSpeech.SubscriptionKey);
+			speechClient = new BingSpeechApiClient (Keys.BingSpeech.SubscriptionKey, SpeechRegion);
 
 			//	if you need custom endpoint(s) you can do this:
 			//speechClient.SpeechEndpoint = new Endpoint ("westus.stt.speech.microsoft.com", "/speech/recognition");
@@ -69,6 +73,21 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 			}
 		}
 
+		private void SpeechRegionPicker_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			//update client to the new region
+			speechClient.SpeechRegion = SpeechRegion;
+
+			//clear existing token, the region has changed
+			speechClient.ClearAuthToken();
+
+			//is the auth switch set to true?
+			if (AuthSwitch.IsToggled)
+			{
+				//get a new token for the selected region
+				Task.Run(() => speechClient.AuthenticateWithToken());
+			}
+		}
 
 		private void AuthSwitch_Toggled (object sender, ToggledEventArgs e)
 		{
@@ -83,7 +102,6 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 				speechClient.ClearAuthToken ();
 			}
 		}
-
 
 		async void Record_Clicked (object sender, EventArgs e)
 		{

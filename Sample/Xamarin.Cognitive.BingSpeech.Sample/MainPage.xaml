@@ -3,6 +3,7 @@
     <Grid>
         <ScrollView Orientation="Vertical" VerticalOptions="FillAndExpand">
             <StackLayout Padding="20,80,20,0" Orientation="Vertical" Spacing="15">
+                <Picker x:Name="SpeechRegionPicker" Title="Choose Speech Region" ItemsSource="{Binding SpeechRegions}" SelectedItem="{Binding SpeechRegion}" SelectedIndexChanged="SpeechRegionPicker_SelectedIndexChanged" />
                 <Picker x:Name="RecognitionModePicker" Title="Choose Recognition Mode" ItemsSource="{Binding RecognitionModes}" SelectedItem="{Binding RecognitionMode}" />
                 <Picker x:Name="OutputModePicker" Title="Choose Output Mode" ItemsSource="{Binding OutputModes}" SelectedItem="{Binding OutputMode}" />
                 <Picker x:Name="ProfanityModePicker" Title="Choose Profanity Mode" ItemsSource="{Binding ProfanityModes}" SelectedItem="{Binding ProfanityMode}" />

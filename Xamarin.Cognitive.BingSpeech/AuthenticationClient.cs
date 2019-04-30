@@ -12,6 +12,7 @@ namespace Xamarin.Cognitive.BingSpeech
 	{
 		readonly string subscriptionKey;
 		readonly Endpoint authEndpoint;
+		readonly SpeechRegion speechRegion;
 		readonly HttpClient client;
 
 		internal string Token { get; private set; }
@@ -21,13 +22,14 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </summary>
 		/// <param name="authEndpoint">The auth endpoint to get an auth token from.</param>
 		/// <param name="subscriptionKey">Subscription identifier.</param>
-		public AuthenticationClient (Endpoint authEndpoint, string subscriptionKey)
+		public AuthenticationClient (Endpoint authEndpoint, string subscriptionKey, SpeechRegion speechRegion)
 		{
 			this.authEndpoint = authEndpoint;
 			this.subscriptionKey = subscriptionKey;
+			this.speechRegion = speechRegion;
 
 			client = new HttpClient ();
-			client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, subscriptionKey);
+			client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, this.subscriptionKey);
 		}
 
 		/// <summary>
@@ -53,9 +55,9 @@ namespace Xamarin.Cognitive.BingSpeech
 			try
 			{
 				var uriBuilder = new UriBuilder (authEndpoint.Protocol,
-												 authEndpoint.Host,
-												 authEndpoint.Port,
-												 authEndpoint.Path);
+												 $"{speechRegion.ToString().ToLower()}.{authEndpoint.Host}",
+												authEndpoint.Port,
+												authEndpoint.Path);
 
 				Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");
 
