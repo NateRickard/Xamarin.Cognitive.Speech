@@ -12,21 +12,23 @@ namespace Xamarin.Cognitive.BingSpeech
 	{
 		readonly string subscriptionKey;
 		readonly Endpoint authEndpoint;
-		readonly SpeechRegion speechRegion;
 		readonly HttpClient client;
 
 		internal string Token { get; private set; }
+
+		internal SpeechRegion SpeechRegion { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.AuthenticationClient"/> class.
 		/// </summary>
 		/// <param name="authEndpoint">The auth endpoint to get an auth token from.</param>
 		/// <param name="subscriptionKey">Subscription identifier.</param>
+		/// <param name="speechRegion">The <see cref="SpeechRegion"/> where your speech service is deployed.</param>
 		public AuthenticationClient (Endpoint authEndpoint, string subscriptionKey, SpeechRegion speechRegion)
 		{
 			this.authEndpoint = authEndpoint;
 			this.subscriptionKey = subscriptionKey;
-			this.speechRegion = speechRegion;
+			this.SpeechRegion = speechRegion;
 
 			client = new HttpClient ();
 			client.DefaultRequestHeaders.Add (Constants.Keys.SubscriptionKey, this.subscriptionKey);
@@ -40,7 +42,7 @@ namespace Xamarin.Cognitive.BingSpeech
 		{
 			if (string.IsNullOrEmpty (Token) || forceNewToken)
 			{
-				Token = null;
+				ClearToken ();
 				Token = await FetchToken ();
 			}
 		}
@@ -55,7 +57,7 @@ namespace Xamarin.Cognitive.BingSpeech
 			try
 			{
 				var uriBuilder = new UriBuilder (authEndpoint.Protocol,
-												 $"{speechRegion.ToString().ToLower()}.{authEndpoint.Host}",
+												 $"{SpeechRegion.ToString ().ToLower ()}.{authEndpoint.Host}",
 												authEndpoint.Port,
 												authEndpoint.Path);
 

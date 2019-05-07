@@ -45,17 +45,16 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// </remarks>
 		public string RecognitionLanguage { get; set; } = "en-US";
 
-
 		/// <summary>
 		/// Gets or sets the speech region 
 		/// </summary>
 		/// <value>The Speech Region</value>
 		/// <remarks>
-		/// There are eighteen speech regions
+		/// Set the speech region with <see cref="SetSpeechRegion"/>. There are eighteen speech regions.
 		/// Choose the appropriate region based on your azure configuration
 		/// https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/rest-speech-to-text#regions-and-endpoints
 		/// </remarks>
-		public SpeechRegion SpeechRegion { get; set; }
+		public SpeechRegion SpeechRegion { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the recognition mode.
@@ -89,9 +88,10 @@ namespace Xamarin.Cognitive.BingSpeech
 		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.BingSpeechApiClient"/> class.
 		/// </summary>
 		/// <param name="subscriptionKey">A valid subscription key for the Bing Speech API.</param>
+		/// <param name="speechRegion">The <see cref="SpeechRegion"/> where your speech service is deployed.</param>
 		/// <param name="authEndpoint">The endpoint used to get the authentication token for the Speech API. Defaults to <see cref="Endpoint.Authentication"/>. To use a custom auth endpoint, set this to an <see cref="Endpoint"/> with your endpoint details.</param>
 		/// <param name="speechEndpoint">The endpoint used to talk to the Speech API. Defaults to <see cref="Endpoint.BingSpeechApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to an <see cref="Endpoint"/> with the details for your CRIS service.</param>
-		public BingSpeechApiClient (string subscriptionKey,SpeechRegion speechRegion, Endpoint authEndpoint = null, Endpoint speechEndpoint = null)
+		public BingSpeechApiClient (string subscriptionKey, SpeechRegion speechRegion, Endpoint authEndpoint = null, Endpoint speechEndpoint = null)
 		{
 			this.subscriptionKey = subscriptionKey;
 			this.authEndpoint = authEndpoint ?? Endpoints.Authentication;
@@ -100,6 +100,15 @@ namespace Xamarin.Cognitive.BingSpeech
 			client = new HttpClient ();
 
 			AuthClient = new AuthenticationClient (this.authEndpoint, this.subscriptionKey, this.SpeechRegion);
+		}
+
+		public void SetSpeechRegion (SpeechRegion speechRegion)
+		{
+			SpeechRegion = speechRegion;
+
+			// clear any cached auth token since we need to reauth with the proper set region
+			AuthClient.SpeechRegion = speechRegion;
+			ClearAuthToken ();
 		}
 
 		/// <summary>
@@ -125,11 +134,11 @@ namespace Xamarin.Cognitive.BingSpeech
 			try
 			{
 				var uriBuilder = new UriBuilder (speechEndpoint.Protocol,
-												 $"{SpeechRegion.ToString().ToLower()}.{speechEndpoint.Host}",
+												 $"{SpeechRegion.ToString ().ToLower ()}.{speechEndpoint.Host}",
 												 speechEndpoint.Port,
 												 speechEndpoint.Path);
 
-				uriBuilder.Path += $"/{RecognitionMode.ToString().ToLower()}/cognitiveservices/{ApiVersion}";
+				uriBuilder.Path += $"/{RecognitionMode.ToString ().ToLower ()}/cognitiveservices/{ApiVersion}";
 				uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}&profanity={ProfanityMode.ToString ().ToLower ()}";
 
 				Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");

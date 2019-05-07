@@ -76,10 +76,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample
 		private void SpeechRegionPicker_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			//update client to the new region
-			speechClient.SpeechRegion = SpeechRegion;
-
-			//clear existing token, the region has changed
-			speechClient.ClearAuthToken();
+			speechClient.SetSpeechRegion (SpeechRegion);
 
 			//is the auth switch set to true?
 			if (AuthSwitch.IsToggled)
