@@ -7,12 +7,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.Speech
 {
 	/// <summary>
-	/// Bing speech API client.
+	/// Speech to Text API client.
 	/// </summary>
-	public class BingSpeechApiClient
+	public class SpeechApiClient
 	{
 		const int ChunkSize = 1024;
 		const int DefaultChannelCount = 1;
@@ -85,13 +85,13 @@ namespace Xamarin.Cognitive.BingSpeech
 		public string ApiVersion { get; set; } = "v1";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.BingSpeechApiClient"/> class.
+		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.Speech.SpeechApiClient"/> class.
 		/// </summary>
-		/// <param name="subscriptionKey">A valid subscription key for the Bing Speech API.</param>
+		/// <param name="subscriptionKey">A valid subscription key for the Speech API.</param>
 		/// <param name="speechRegion">The <see cref="SpeechRegion"/> where your speech service is deployed.</param>
 		/// <param name="authEndpoint">The endpoint used to get the authentication token for the Speech API. Defaults to <see cref="Endpoint.Authentication"/>. To use a custom auth endpoint, set this to an <see cref="Endpoint"/> with your endpoint details.</param>
-		/// <param name="speechEndpoint">The endpoint used to talk to the Speech API. Defaults to <see cref="Endpoint.BingSpeechApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to an <see cref="Endpoint"/> with the details for your CRIS service.</param>
-		public BingSpeechApiClient (string subscriptionKey, SpeechRegion speechRegion, Endpoint authEndpoint = null, Endpoint speechEndpoint = null)
+		/// <param name="speechEndpoint">The endpoint used to talk to the Speech API. Defaults to <see cref="Endpoint.SpeechServiceApi"/>. To use a CRIS/Custom Speech Service endpoint, set this to an <see cref="Endpoint"/> with the details for your CRIS service.</param>
+		public SpeechApiClient (string subscriptionKey, SpeechRegion speechRegion, Endpoint authEndpoint = null, Endpoint speechEndpoint = null)
 		{
 			this.subscriptionKey = subscriptionKey;
 			this.authEndpoint = authEndpoint ?? Endpoints.Authentication;
@@ -112,7 +112,7 @@ namespace Xamarin.Cognitive.BingSpeech
 		}
 
 		/// <summary>
-		/// Calls to the <see cref="AuthEndpoint"/> authentication endpoint to get a JWT token for authentication to the Bing Speech API.  Token is cached and valid for 10 minutes.
+		/// Calls to the <see cref="AuthEndpoint"/> authentication endpoint to get a JWT token for authentication to the Speech API.  Token is cached and valid for 10 minutes.
 		/// </summary>
 		/// <param name="forceNewToken">If set to <c>true</c>, force new token even if there is already a cached token.</param>
 		/// <remarks>This is called automatically when calling any of the SpeechToText* methods.  Call this separately up front to decrease latency on the initial API call.</remarks>

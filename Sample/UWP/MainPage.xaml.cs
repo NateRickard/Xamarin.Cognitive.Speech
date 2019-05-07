@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace Xamarin.Cognitive.BingSpeech.Sample.UWP
+namespace Xamarin.Cognitive.Speech.Sample.UWP
 {
     public sealed partial class MainPage
     {
@@ -21,7 +21,7 @@ namespace Xamarin.Cognitive.BingSpeech.Sample.UWP
         {
             this.InitializeComponent();
 
-            LoadApplication(new Xamarin.Cognitive.BingSpeech.Sample.App());
+            LoadApplication(new Xamarin.Cognitive.Speech.Sample.App());
         }
     }
 }

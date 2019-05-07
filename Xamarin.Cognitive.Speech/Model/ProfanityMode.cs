@@ -1,4 +1,4 @@
-namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.Speech
 {
 	/// <summary>
 	/// ProfanityMode defines the possible modes in which the service can handle profanity.

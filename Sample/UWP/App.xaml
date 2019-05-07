@@ -1,8 +1,8 @@
-﻿<Application
-    x:Class="Xamarin.Cognitive.BingSpeech.Sample.UWP.App"
+<Application
+    x:Class="Xamarin.Cognitive.Speech.Sample.UWP.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Xamarin.Cognitive.BingSpeech.Sample.UWP"
+    xmlns:local="using:Xamarin.Cognitive.Speech.Sample.UWP"
     RequestedTheme="Light">
 
 </Application>

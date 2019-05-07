@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Xamarin.Cognitive.BingSpeech\Xamarin.Cognitive.Speech.csproj" />
+    <ProjectReference Include="..\..\Xamarin.Cognitive.Speech\Xamarin.Cognitive.Speech.csproj" />
   </ItemGroup>
 
   <ItemGroup>

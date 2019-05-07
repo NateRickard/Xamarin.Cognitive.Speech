@@ -1,4 +1,4 @@
-namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.Speech
 {
 	/// <summary>
 	/// The authentication types supported by the Speech API.

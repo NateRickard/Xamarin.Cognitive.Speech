@@ -5,7 +5,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 
-namespace Xamarin.Cognitive.BingSpeech.Sample.iOS
+namespace Xamarin.Cognitive.Speech.Sample.iOS
 {
     public class Application
     {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:Xamarin.Cognitive.BingSpeech.Sample" x:Class="Xamarin.Cognitive.BingSpeech.Sample.MainPage">
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:Xamarin.Cognitive.Speech.Sample" x:Class="Xamarin.Cognitive.Speech.Sample.MainPage">
     <Grid>
         <ScrollView Orientation="Vertical" VerticalOptions="FillAndExpand">
             <StackLayout Padding="20,80,20,0" Orientation="Vertical" Spacing="15">

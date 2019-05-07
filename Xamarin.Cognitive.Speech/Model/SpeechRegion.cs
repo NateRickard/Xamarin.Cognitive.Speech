@@ -1,4 +1,4 @@
-namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.Speech
 {
 	public enum SpeechRegion
 	{
@@ -19,6 +19,6 @@ namespace Xamarin.Cognitive.BingSpeech
 		UKSouth,
 		WestEurope,
 		WestUS,
-		WestUS2	
+		WestUS2
 	}
 }

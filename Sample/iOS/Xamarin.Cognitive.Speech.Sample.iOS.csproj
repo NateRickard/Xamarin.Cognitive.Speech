@@ -9,9 +9,9 @@
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Xamarin.Cognitive.BingSpeech.Sample.iOS</RootNamespace>
+    <RootNamespace>Xamarin.Cognitive.Speech.Sample.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>Xamarin.Cognitive.BingSpeech.Sample.iOS</AssemblyName>
+    <AssemblyName>Xamarin.Cognitive.Speech.Sample.iOS</AssemblyName>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -156,7 +156,7 @@
     <PackageReference Include="Xamarin.Forms" Version="3.1.0.697729" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xamarin.Cognitive.BingSpeech.Sample\Xamarin.Cognitive.Speech.Sample.csproj">
+    <ProjectReference Include="..\Xamarin.Cognitive.Speech.Sample\Xamarin.Cognitive.Speech.Sample.csproj">
       <Project>{65c2b7b3-a7ca-4581-9c08-d05f5de61e13}</Project>
       <Name>Xamarin.Cognitive.Speech.Sample</Name>
     </ProjectReference>

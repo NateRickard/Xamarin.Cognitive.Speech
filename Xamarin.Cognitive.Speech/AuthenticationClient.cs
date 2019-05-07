@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.Speech
 {
 	/// <summary>
-	/// Client that authenticates to the Bing Speech API.
+	/// Client that authenticates to the Speech API.
 	/// </summary>
 	class AuthenticationClient
 	{
@@ -19,7 +19,7 @@ namespace Xamarin.Cognitive.BingSpeech
 		internal SpeechRegion SpeechRegion { get; set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.BingSpeech.AuthenticationClient"/> class.
+		/// Initializes a new instance of the <see cref="T:Xamarin.Cognitive.Speech.AuthenticationClient"/> class.
 		/// </summary>
 		/// <param name="authEndpoint">The auth endpoint to get an auth token from.</param>
 		/// <param name="subscriptionKey">Subscription identifier.</param>

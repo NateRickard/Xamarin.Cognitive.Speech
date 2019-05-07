@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace Xamarin.Cognitive.BingSpeech
+namespace Xamarin.Cognitive.Speech
 {
 	static class Extensions
 	{

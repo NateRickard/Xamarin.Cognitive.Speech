@@ -7,8 +7,8 @@
     <ProjectGuid>{C3BA6D64-60E0-454F-BE6A-ECB610B686E5}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Xamarin.Cognitive.BingSpeech.Sample.UWP</RootNamespace>
-    <AssemblyName>Xamarin.Cognitive.BingSpeech.Sample.UWP</AssemblyName>
+    <RootNamespace>Xamarin.Cognitive.Speech.Sample.UWP</RootNamespace>
+    <AssemblyName>Xamarin.Cognitive.Speech.Sample.UWP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.16299.0</TargetPlatformVersion>
@@ -17,7 +17,7 @@
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Xamarin.Cognitive.BingSpeech.Sample.UWP_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Xamarin.Cognitive.Speech.Sample.UWP_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -147,7 +147,7 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.7" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xamarin.Cognitive.BingSpeech.Sample\Xamarin.Cognitive.Speech.Sample.csproj">
+    <ProjectReference Include="..\Xamarin.Cognitive.Speech.Sample\Xamarin.Cognitive.Speech.Sample.csproj">
       <Project>{65c2b7b3-a7ca-4581-9c08-d05f5de61e13}</Project>
       <Name>Xamarin.Cognitive.Speech.Sample</Name>
     </ProjectReference>

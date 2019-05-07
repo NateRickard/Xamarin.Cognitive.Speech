@@ -6,9 +6,9 @@ using Android.Support.V4.App;
 using Android.Support.V4.Content;
 using System;
 
-namespace Xamarin.Cognitive.BingSpeech.Sample.Droid
+namespace Xamarin.Cognitive.Speech.Sample.Droid
 {
-	[Activity(Label = "Xamarin.Cognitive.BingSpeech.Sample", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+	[Activity(Label = "Xamarin.Cognitive.Speech.Sample", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle bundle)

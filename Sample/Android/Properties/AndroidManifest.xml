@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.Xamarin.Cognitive.BingSpeech.Sample" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.Xamarin.Cognitive.Speech.Sample" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="19" android:targetSdkVersion="27" />
 	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.RECORD_AUDIO" />
-	<application android:label="Xamarin.Cognitive.BingSpeech.Sample.Android"></application><!-- android:networkSecurityConfig="@xml/network_security_config" -->
+	<application android:label="Xamarin.Cognitive.Speech.Sample.Android"></application><!-- android:networkSecurityConfig="@xml/network_security_config" -->
 </manifest>

@@ -3,7 +3,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
-namespace Xamarin.Cognitive.BingSpeech.Sample
+namespace Xamarin.Cognitive.Speech.Sample
 {
 	public partial class App : Application
 	{
