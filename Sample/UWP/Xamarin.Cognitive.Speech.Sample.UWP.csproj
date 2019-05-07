@@ -147,9 +147,9 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.1.7" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xamarin.Cognitive.BingSpeech.Sample\Xamarin.Cognitive.BingSpeech.Sample.csproj">
+    <ProjectReference Include="..\Xamarin.Cognitive.BingSpeech.Sample\Xamarin.Cognitive.Speech.Sample.csproj">
       <Project>{65c2b7b3-a7ca-4581-9c08-d05f5de61e13}</Project>
-      <Name>Xamarin.Cognitive.BingSpeech.Sample</Name>
+      <Name>Xamarin.Cognitive.Speech.Sample</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
