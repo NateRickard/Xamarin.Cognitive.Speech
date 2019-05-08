@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:Xamarin.Cognitive.Speech.Sample" x:Class="Xamarin.Cognitive.Speech.Sample.MainPage">
+    <Grid>
+        <ScrollView Orientation="Vertical" VerticalOptions="FillAndExpand">
+            <StackLayout Padding="20,80,20,0" Orientation="Vertical" Spacing="15">
+                <Picker x:Name="SpeechRegionPicker" Title="Choose Speech Region" ItemsSource="{Binding SpeechRegions}" SelectedItem="{Binding SpeechRegion}" SelectedIndexChanged="SpeechRegionPicker_SelectedIndexChanged" />
+                <Picker x:Name="RecognitionModePicker" Title="Choose Recognition Mode" ItemsSource="{Binding RecognitionModes}" SelectedItem="{Binding RecognitionMode}" />
+                <Picker x:Name="OutputModePicker" Title="Choose Output Mode" ItemsSource="{Binding OutputModes}" SelectedItem="{Binding OutputMode}" />
+                <Picker x:Name="ProfanityModePicker" Title="Choose Profanity Mode" ItemsSource="{Binding ProfanityModes}" SelectedItem="{Binding ProfanityMode}" />
+                <Picker x:Name="AuthenticationModePicker" Title="Choose Authentication Mode" ItemsSource="{Binding AuthenticationModes}" SelectedItem="{Binding AuthenticationMode}" SelectedIndexChanged="AuthenticationModePicker_SelectedIndexChanged" />
+                <StackLayout Orientation="Horizontal" x:Name="InitialAuthSection">
+                    <Switch x:Name="AuthSwitch" VerticalOptions="Center" Toggled="AuthSwitch_Toggled" />
+                    <Label Text="Authenticate with token initially"  VerticalOptions="Center" />
+                </StackLayout>
+                <StackLayout Orientation="Horizontal">
+                    <Switch x:Name="StreamSwitch" VerticalOptions="Center" />
+                    <Label Text="Send audio data while recording"  VerticalOptions="Center" />
+                </StackLayout>
+                <Button x:Name="RecordButton" Text="Record Me" FontSize="24" HorizontalOptions="FillAndExpand" Clicked="Record_Clicked" />
+                <Label Text="(15 sec max)" FontSize="14" HorizontalOptions="Center" />
+                <Label Text="Output:" />
+                <Label x:Name="ResultsLabel" HorizontalOptions="CenterAndExpand" LineBreakMode="WordWrap" MinimumHeightRequest="200" MinimumWidthRequest="400" BackgroundColor="Gray" />
+            </StackLayout>
+        </ScrollView>
+        <ContentView x:Name="spinnerContent" IsVisible="false" HorizontalOptions="Fill" VerticalOptions="Fill" BackgroundColor="#A6FFFFFF">
+            <ActivityIndicator x:Name="spinner" WidthRequest="100" HeightRequest="100" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" />
+        </ContentView>
+    </Grid>
+</ContentPage>
