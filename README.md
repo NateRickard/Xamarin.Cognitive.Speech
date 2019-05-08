@@ -1,25 +1,26 @@
-# Xamarin.Cognitive.BingSpeech ![NuGet](https://img.shields.io/nuget/v/Xamarin.Cognitive.BingSpeech.svg?label=NuGet)
+# Xamarin.Cognitive.Speech ![NuGet](https://img.shields.io/nuget/v/Xamarin.Cognitive.Speech.svg?label=NuGet)
 
-`Xamarin.Cognitive.BingSpeech` is a managed client library that makes it easy to work with the [Microsoft Cognitive Services Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/) on Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, and other .NET Standard 2.0+ projects.
+`Xamarin.Cognitive.Speech` is a managed client library that makes it easy to work with the [Microsoft Cognitive Services Speech Services Speech to Text API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/) on Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, and other .NET Standard 2.0+ projects.
 
 Includes a Xamarin.Forms sample with iOS, Android, and UWP apps.
 
-Resources about the Bing Speech API and what it is:
+Resources about the Speech Services/Speech to Text API and what it is:
 
-- [Learn about the Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/)
-- [Documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/home)
+- [Learn about the Speech Services](https://azure.microsoft.com/en-us/services/cognitive-services/speech/)
+- [Documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/rest-speech-to-text)
 
 
 # Why?
 
-Why use this client library to talk to the Bing Speech API and not [insert other lib or sample code here]?
+Why use this client library to talk to the Speech to Text API and not [insert other lib or sample code here]?
 
 - The official C# SDK is made with Windows in mind, not Xamarin/mobile.
 - Many/most other Xamarin-based examples or sample apps I've found:
-	- Use an older version of the Bing Speech API.
+	- Use an older version of the "Bing" Speech API.
 	- Use the older `HttpWebRequest` network APIs.
 	- Contain very little in the way of feature support.
 	- Are not mobile-specific or don't contain mobile examples/value-adds
+	- Seem overly complex
 
 I wanted to create something specific to mobile, that was updated, easy to use, and included some niceties specific to the mobile world.
 
@@ -27,8 +28,8 @@ I wanted to create something specific to mobile, that was updated, easy to use, 
 # Features
 
 - 100% `HttpClient`-based, managed code (.NET Standard 2.0)
-- Works with the latest version of the Bing Speech API
-- Advanced Bing Speech API feature support, such as:
+- Works with the latest version of the Speech Services Speech to Text API
+- Advanced Speech Services API feature support, such as:
 	- Chunked transfer encoding for efficient audio streaming to server
 	- Three recognition modes:
     	- Interactive
@@ -48,17 +49,17 @@ I wanted to create something specific to mobile, that was updated, easy to use, 
 
 # Setup
 
-`Xamarin.Cognitive.BingSpeech` is available as a [NuGet package](https://www.nuget.org/packages/Xamarin.Cognitive.BingSpeech/) to be added to your Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, or other .NET Standard 2.0+ project(s).
+`Xamarin.Cognitive.Speech` is available as a [NuGet package](https://www.nuget.org/packages/Xamarin.Cognitive.Speech/) to be added to your Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, or other .NET Standard 2.0+ project(s).
 
-You must have a valid Bing Speech API subscription key.  You can get a free trial key or create a permanent key in the [Bing Speech API portal](https://azure.microsoft.com/en-us/services/cognitive-services/speech/).
+You must have a valid Speech API subscription key.  You can get a free trial key or create a permanent key in the [Speech Services portal](https://azure.microsoft.com/en-us/services/cognitive-services/speech/).
 
 Once you have an API key, you can construct an instance of the client:
 
 ```C#
-var bingSpeechClient = new BingSpeechApiClient ("<YOUR KEY>");
+var speechClient = new SpeechApiClient ("<YOUR KEY>", SpeechRegion.<YOUR SPEECH REGION>);
 ```
 
-Read more details on [how to use the client below](https://github.com/NateRickard/Xamarin.Cognitive.BingSpeech#usage).
+Read more details on [how to use the client below](https://github.com/NateRickard/Xamarin.Cognitive.Speech#usage).
 
 To run the sample(s), update the `Keys.cs` file so the `SubscriptionKey` property is set to your API key:
 
@@ -69,9 +70,9 @@ public const string SubscriptionKey = "My Key Goes Here";
 
 ## Platform-Specific Configuration
 
-All app platforms should have 'Internet' or similar permissions in order to communicate with the Bing Speech API.  Outside of this, no platform specific config is required for this library to function.
+All app platforms should have 'Internet' or similar permissions in order to communicate with the Speech Services.  Outside of this, no platform specific config is required for this library to function.
 
-**Note:** if you're using the [Audio Recorder Plugin](https://www.nuget.org/packages/Plugin.AudioRecorder/) (or likely any other method of recording audio) to send audio to the Bing Speech API, you'll want to review the [platform-specific permissions required for each platform](https://github.com/NateRickard/Plugin.AudioRecorder#required-permissions--capabilities) there for accessing the microphone and recording audio.
+**Note:** if you're using the [Audio Recorder Plugin](https://www.nuget.org/packages/Plugin.AudioRecorder/) (or likely any other method of recording audio) to send audio to the Speech API, you'll want to review the [platform-specific permissions required for each platform](https://github.com/NateRickard/Plugin.AudioRecorder#required-permissions--capabilities) there for accessing the microphone and recording audio.
 
 ### iOS
 
@@ -84,13 +85,15 @@ With the latest speech api we've seen the need to change your Android project to
 
 # Usage
 
-The [sample app](https://github.com/NateRickard/Xamarin.Cognitive.BingSpeech/tree/master/Sample) demonstrates everything shown below and more.
+The [sample app](https://github.com/NateRickard/Xamarin.Cognitive.Speech/tree/master/Sample) demonstrates everything shown below and more.
 
-The first thing you'll need to do is construct a new instance of the Bing Speech API client that will be used for your API calls:
+The first thing you'll need to do is construct a new instance of the Speech API client that will be used for your API calls:
 
 ```C#
-BingSpeechApiClient bingSpeechClient = new BingSpeechApiClient ("<YOUR API KEY>");
+SpeechApiClient speechClient = new SpeechApiClient ("<YOUR API KEY>", SpeechRegion.<YOUR SPEECH REGION>);
 ```
+
+The speech region is the Azure region where your speech service is deployed.  You can find this and the api/subscription key(s) in the Azure portal.
 
 ## Authentication
 
@@ -124,7 +127,7 @@ BingSpeechApiClient bingSpeechClient = new BingSpeechApiClient ("<YOUR API KEY>"
     
 ## Output Modes
 
-The Bing Speech API has two distinct output modes that yield different results.  More information on each output mode [can be found in the documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoicerecognition#output-format).
+The Speech API has two distinct output modes that yield different results.  More information on each output mode [can be found in the documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/speech/concepts#output-format).
 
 
 ### Simple Output Mode
@@ -134,7 +137,7 @@ Simple output mode will return a single result with less detail.
 ```C#
 var audioFile = "/a/path/to/my/audio/file/in/WAV/format.wav";
 
-var simpleResult = await bingSpeechClient.SpeechToTextSimple (audioFile);
+var simpleResult = await speechClient.SpeechToTextSimple (audioFile);
 ```
 
 Simple output mode will return a `RecognitionSpeechResult` with the following structure:
@@ -181,7 +184,7 @@ Detailed output mode will return more detail, and possibly more than one result.
 ```C#
 var audioFile = "/a/path/to/my/audio/file/in/WAV/format.wav";
 
-var detailedResult = await bingSpeechClient.SpeechToTextDetailed (audioFile);
+var detailedResult = await speechClient.SpeechToTextDetailed (audioFile);
 ```
 
 Detailed output mode will return a `RecognitionResult` with the following structure:
@@ -264,18 +267,18 @@ public class SpeechResult
 
 ## Streaming Audio
 
-It's also possible to send audio to the server from a `Stream`.  The most common use of this would be to start sending audio data to the Bing Speech API as it's still being recorded.
+It's also possible to send audio to the server from a `Stream`.  The most common use of this would be to start sending audio data to the Speech API as it's still being recorded.
 
 In addition to the audio `Stream`, you can also provide an optional `Task` object that will indicate when the audio stream has finished recording.  If the `Task` is omitted, the client library will attempt to make additional reads from the stream until no further audio data is detected; however, this is not recommended.
 
 ```C#
 // simple output mode
 
-var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, <audio record Task>);
+var simpleResult = await speechClient.SpeechToTextSimple (stream, <audio record Task>);
 
 // ... or detailed output mode
 
-var detailedResult = await bingSpeechClient.SpeechToTextDetailed (stream, <audio record Task>);
+var detailedResult = await speechClient.SpeechToTextDetailed (stream, <audio record Task>);
 ```
 
 **NOTE** If you're streaming raw PCM audio data, a WAV/RIFF header needs to be written to the beginning of your audio data (this is a requirement of the Speech API).  This library is able to write the header to the outgoing network stream prior to sending the audio data; however, you MUST use one of the `SpeechToTextSimple` or `SpeechToTextDetailed` overloads that takes those audio details.
@@ -289,7 +292,7 @@ var audioRecordTask = await recorder.StartRecording ();
 using (var stream = recorder.GetAudioFileStream ())
 {
 	// this will begin sending the recording audio data as it continues to record
-	var simpleResult = await bingSpeechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.SampleRate, audioRecordTask);
+	var simpleResult = await speechClient.SpeechToTextSimple (stream, recorder.AudioStreamDetails.SampleRate, audioRecordTask);
 }
 ```
 
@@ -299,16 +302,18 @@ As the audio recorder plugin stream will be raw PCM data, the sample rate (at a 
 
 By default, the library will use the standard STT and authentication endpoints for the Speech service:
 
-Auth: `https://api.cognitive.microsoft.com/sts/v1.0/issueToken`
-STT: `https://speech.platform.bing.com/speech/recognition`
+Auth: `https://<SPEECH REGION>.api.cognitive.microsoft.com/sts/v1.0/issueToken`
+STT: `https://<SPEECH REGION>.stt.speech.microsoft.com/speech/recognition`
 
 To use a STT (or authentication, for token auth only) endpoint other than the default (for CRIS/Custom Speech Service or if your speech service created a unique endpoint), create a new `Endpoint` with the host, path, and other details, and pass this into the constructor:
 
 ```c#
-var bingSpeechClient = new BingSpeechApiClient ("<YOUR KEY>",
-    new Endpoint ("westus.api.cognitive.microsoft.com", "/sts/v1.0/issueToken") //auth endpoint
-    new Endpoint ("westus.stt.speech.microsoft.com", "/speech/recognition")); //STT endpoint
+var speechClient = new SpeechApiClient ("<YOUR KEY>", SpeechRegion.<YOUR SPEECH REGION>,
+    new Endpoint ("myunique.host.api.cognitive.microsoft.com", "/sts/v1.0/issueToken") //auth endpoint
+    new Endpoint ("myunique.host.stt.speech.microsoft.com", "/speech/recognition")); //STT endpoint
 ```
+
+If the endpoint(s) you're using do not require the speech region to prefix the url, you can specify this in the Endpoint creation by passing `false` for the `prefixWithRegion` parameter.
 	
 # Contributing
 
