@@ -50,9 +50,10 @@ namespace Xamarin.Cognitive.Speech.Sample
 
 			speechClient = new SpeechApiClient (Keys.Speech.SubscriptionKey, SpeechRegion);
 
-			//	if you need custom endpoint(s) you can do this:
-			//speechClient.SpeechEndpoint = new Endpoint ("westus.stt.speech.microsoft.com", "/speech/recognition");
-			//speechClient.AuthEndpoint = new Endpoint ("westus.api.cognitive.microsoft.com", "/sts/v1.0/issueToken");
+			//	if you need custom endpoint(s) you can create them and pass into the SpeechApiClient constructor:
+			//var speechEndpoint = new Endpoint ("westus.stt.speech.microsoft.com", "/speech/recognition");
+			//var authEndpoint = new Endpoint ("westus.api.cognitive.microsoft.com", "/sts/v1.0/issueToken");
+			//speechClient = new SpeechApiClient (Keys.Speech.SubscriptionKey, SpeechRegion, authEndpoint, speechEndpoint);
 
 			BindingContext = this;
 		}
