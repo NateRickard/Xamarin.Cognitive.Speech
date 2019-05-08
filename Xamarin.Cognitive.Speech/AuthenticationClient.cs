@@ -56,14 +56,11 @@ namespace Xamarin.Cognitive.Speech
 		{
 			try
 			{
-				var uriBuilder = new UriBuilder (authEndpoint.Protocol,
-												 $"{SpeechRegion.ToString ().ToLower ()}.{authEndpoint.Host}",
-												authEndpoint.Port,
-												authEndpoint.Path);
+				var uri = authEndpoint.ToUriBuilder (SpeechRegion).Uri;
 
-				Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");
+				Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uri}");
 
-				var result = await client.PostAsync (uriBuilder.Uri, null);
+				var result = await client.PostAsync (uri, null);
 
 				if (result.IsSuccessStatusCode)
 				{
