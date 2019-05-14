@@ -14,14 +14,13 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Xamarin.Cognitive.Speech</PackageId>
-    <PackageVersion Condition="'$(PackageVersion)' == ''">1.0.0</PackageVersion>
+    <PackageVersion Condition="'$(PackageVersion)' == ''">1.0.1</PackageVersion>
     <Title>Xamarin client for the Azure Cognitive Services Speech Services Speech to Text API</Title>
     <Authors>Nate Rickard</Authors>
     <Owners>Nate Rickard</Owners>
     <Summary>Xamarin.Cognitive.Speech is a managed client library for the Microsoft Cognitive Services Speech Services Speech to Text API</Summary>
     <Description>A managed client library that makes it easy to work with the Microsoft Cognitive Services Speech Services Speech to Text API on Xamarin.iOS, Xamarin.Android, and Xamarin.Forms, UWP, and/or .NET Standard projects.</Description>
-    <PackageReleaseNotes>
-    </PackageReleaseNotes>
+    <PackageReleaseNotes>Xamarin.Cognitive.Speech is the evolution of the Xamarin.Cognitive.BingSpeech package and works with the updated Microsoft Speech Services Speech to Text API.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/NateRickard/Xamarin.Cognitive.Speech</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/NateRickard/Xamarin.Cognitive.Speech/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>Copyright © Nate Rickard</Copyright>
