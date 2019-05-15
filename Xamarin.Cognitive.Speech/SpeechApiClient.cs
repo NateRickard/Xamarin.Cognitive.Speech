@@ -136,7 +136,7 @@ namespace Xamarin.Cognitive.Speech
 				var uriBuilder = speechEndpoint.ToUriBuilder (SpeechRegion);
 
 				uriBuilder.Path += $"/{RecognitionMode.ToString ().ToLower ()}/cognitiveservices/{ApiVersion}";
-				uriBuilder.Query = $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}&profanity={ProfanityMode.ToString ().ToLower ()}";
+				uriBuilder.Query += $"language={RecognitionLanguage}&format={outputMode.ToString ().ToLower ()}&profanity={ProfanityMode.ToString ().ToLower ()}";
 
 				Debug.WriteLine ($"{DateTime.Now} :: Request Uri: {uriBuilder.Uri}");
 
