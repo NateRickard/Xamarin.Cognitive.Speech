@@ -1,4 +1,4 @@
-# Xamarin.Cognitive.Speech ![NuGet](https://img.shields.io/nuget/v/Xamarin.Cognitive.Speech.svg?label=NuGet)
+# Xamarin.Cognitive.Speech [![NuGet](https://img.shields.io/nuget/v/Xamarin.Cognitive.Speech.svg?label=NuGet)](https://www.nuget.org/packages/Xamarin.Cognitive.Speech)
 
 `Xamarin.Cognitive.Speech` is a managed client library that makes it easy to work with the [Microsoft Cognitive Services Speech Services Speech to Text API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/) on Xamarin.iOS, Xamarin.Android, Xamarin.Forms, UWP, and other .NET Standard 2.0+ projects.
 
